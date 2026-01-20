@@ -114,17 +114,17 @@ export default function GradientText({
 
   return (
     <motion.div
-      className={`relative mx-auto flex max-w-fit flex-row items-center justify-center rounded-[1.25rem] font-medium backdrop-blur transition-shadow duration-500 overflow-hidden cursor-pointer ${showBorder ? "py-1 px-2" : ""} ${className}`}
+      className={`relative mx-auto flex max-w-fit flex-row items-center justify-center font-medium backdrop-blur transition-shadow duration-500 overflow-hidden cursor-pointer ${showBorder ? "py-1 px-2" : ""} ${className}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {showBorder && (
         <motion.div
-          className="absolute inset-0 z-0 pointer-events-none rounded-[1.25rem]"
+          className="absolute inset-0 z-0 pointer-events-none"
           style={{ ...gradientStyle, backgroundPosition }}
         >
           <div
-            className="absolute bg-black rounded-[1.25rem] z-[-1]"
+            className="absolute bg-black z-[-1]"
             style={{
               width: "calc(100% - 2px)",
               height: "calc(100% - 2px)",

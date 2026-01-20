@@ -1,4 +1,5 @@
 import DarkVeil from "@/helpers/ui/DarkVeil";
+import Navbar from "@/helpers/ui/Navbar";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -28,6 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-full`}
       >
+        {/* Background */}
         <div className="fixed inset-0 z-0 h-screen w-screen overflow-hidden">
           <DarkVeil
             hueShift={0}
@@ -39,7 +41,11 @@ export default function RootLayout({
           />
         </div>
 
-        <div className="relative z-40 min-h-screen flex p-2">{children}</div>
+        {/* Navbar + Content */}
+        <div className="relative z-40 min-h-screen">
+          <Navbar /> {/* ← Navbar toujours visible */}
+          <div className="pt-0">{children}</div> {/* Padding top 0 */}
+        </div>
       </body>
     </html>
   );

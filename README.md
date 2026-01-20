@@ -1,36 +1,33 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SolVault
 
-## Getting Started
+**SolVault: Your Solana wallets. Your total control. No KYC. No forced cloud.**
 
-First, run the development server:
+You may also find managing multiple Solana wallets inconvenient. SolVault is an application that lets you create and track your Solana wallets with a single click, stored in a local SQLite database to ensure no one can access your data. You can also export your wallet keys in KeePass format.
+
+This first version focuses on simple and secure management. Future versions will include a graphing system to visualize interactions with your wallets (similar to Obsidian), an automatic wallet splitting system once a certain amount is reached, and conversions to BTC, stablecoins, and Monero.
+
+![SolVault first overview](public/first_overview.png)
+
+## Features
+
+- Wallet creation in one click (seed phrase + address)
+- Live transaction and balance monitoring
+- Local SQLite storage (100% your data)
+- KeePass export (CSV/JSON secure)
+- Ultra-fast inter-wallet transfers
+
+## Installation
 
 ```bash
+git clone https://github.com/Charlyhno-eng/solvault
+cd solvault
+npm install
+cp .env.example .env.local
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js 15 + Tailwind + shadcn/ui
+Prisma + local SQLite
+@solana/web3.js
