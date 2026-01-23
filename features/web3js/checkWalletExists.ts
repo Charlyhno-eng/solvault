@@ -24,12 +24,7 @@ export async function checkWalletExists(
     console.log("Owner:", owner);
     console.log("Clé valide ?", isValidCurve);
 
-    return {
-      balanceSOL,
-      dataLength,
-      owner,
-      isValidCurve,
-    };
+    return { balanceSOL, dataLength, owner, isValidCurve };
   } catch (error) {
     console.error("Error check wallet:", error);
     throw error;

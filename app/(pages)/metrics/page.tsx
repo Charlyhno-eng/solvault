@@ -6,13 +6,12 @@ import { useEffect, useState } from "react";
 
 function PageMetrics() {
   const [metrics, setMetrics] = useState<Metrics | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
 
   async function refreshData() {
     setLoading(true);
     try {
-      const data = await fetchSolanaMetrics();
-      setMetrics(data);
+      setMetrics(await fetchSolanaMetrics());
     } catch (error) {
       console.error("Error fetching metrics:", error);
       setMetrics(null);
@@ -37,8 +36,6 @@ function PageMetrics() {
     );
   }
 
-  const data = metrics;
-
   return (
     <div className="h-[90vh] overflow-y-auto p-8 text-white font-mono text-sm">
       <h1 className="text-2xl mb-8 border-b border-gray-700 pb-4">
@@ -49,24 +46,24 @@ function PageMetrics() {
         <div className="bg-black/20 p-6 rounded-xl backdrop-blur-sm border border-gray-700/50 hover:border-white/30 transition-all">
           <h2 className="text-lg font-bold mb-4">SOL Price</h2>
           <div className="text-3xl font-bold text-green-400">
-            ${data.solPrice.toFixed(2)}
+            ${metrics.solPrice.toFixed(2)}
           </div>
         </div>
 
         <div className="bg-black/20 p-6 rounded-xl backdrop-blur-sm border border-gray-700/50 hover:border-white/30 transition-all">
           <h2 className="text-lg font-bold mb-4">Avg TX Fee</h2>
           <div className="text-2xl font-bold">
-            {data.avgTxFee.toFixed(6)} SOL
+            {metrics.avgTxFee.toFixed(6)} SOL
           </div>
           <div className="text-gray-400 text-xs">
-            ~${(data.avgTxFee * data.solPrice).toFixed(6)}
+            ~${(metrics.avgTxFee * metrics.solPrice).toFixed(6)}
           </div>
         </div>
 
         <div className="bg-black/20 p-6 rounded-xl backdrop-blur-sm border border-gray-700/50 hover:border-white/30 transition-all">
           <h2 className="text-lg font-bold mb-4">Current TPS</h2>
           <div className="text-3xl font-bold text-blue-400">
-            {data.tps.toFixed(0)}
+            {metrics.tps.toFixed(0)}
           </div>
         </div>
 
@@ -75,13 +72,13 @@ function PageMetrics() {
           <div className="grid grid-cols-2 gap-4 text-center">
             <div>
               <div className="text-xl font-bold">
-                {data.avgBlockTime.toFixed(1)}s
+                {metrics.avgBlockTime.toFixed(1)}s
               </div>
               <div className="text-gray-400 text-xs">Block</div>
             </div>
             <div>
               <div className="text-xl font-bold">
-                {data.avgConfirmationTime.toFixed(1)}s
+                {metrics.avgConfirmationTime.toFixed(1)}s
               </div>
               <div className="text-gray-400 text-xs">Confirmation</div>
             </div>
@@ -91,7 +88,7 @@ function PageMetrics() {
         <div className="bg-black/20 backdrop-blur-sm border border-white/10 p-6 rounded-xl md:col-span-2 lg:col-span-1 shadow-xl hover:shadow-2xl transition-all">
           <h2 className="text-lg font-bold mb-4">24h TX</h2>
           <div className="text-4xl font-bold text-center text-purple-400">
-            {Math.round(data.totalTx24h).toLocaleString()}
+            {Math.round(metrics.totalTx24h).toLocaleString()}
           </div>
         </div>
       </div>
@@ -109,7 +106,7 @@ function PageMetrics() {
               </tr>
             </thead>
             <tbody>
-              {data.recentBlocks.map(function (block, index) {
+              {metrics.recentBlocks.map(function (block, index) {
                 const timeAgo = block.blockTime
                   ? `${Math.floor((Date.now() / 1000 - block.blockTime!) / 60)}m`
                   : "N/A";

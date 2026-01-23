@@ -22,7 +22,11 @@ This first version focuses on simple and secure management. Future versions will
 git clone https://github.com/Charlyhno-eng/solvault
 cd solvault
 npm install
-cp .env.example .env.local
+```
+
+In the /infrastructures/database folder you need to create a db.sqlite file.
+
+```bash
 npm run dev
 ```
 

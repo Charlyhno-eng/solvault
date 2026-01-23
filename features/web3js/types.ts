@@ -20,7 +20,7 @@ export type Metrics = {
   avgBlockTime: number;
   tps: number;
   avgConfirmationTime: number;
-  recentBlocks: Array<{
+  recentBlocks: ReadonlyArray<{
     slot: number;
     blockTime: number | null;
     numTx: number;
@@ -28,3 +28,10 @@ export type Metrics = {
   }>;
   totalTx24h: number;
 };
+
+export type recentBlocksType = {
+  slot: number;
+  blockTime: number | null;
+  numTx: number;
+  timestamp: string;
+}[];

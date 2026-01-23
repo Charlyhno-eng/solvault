@@ -1,7 +1,7 @@
 import { fetchSolanaPrice } from "@/infrastructures/external/coingecko";
 import { getSolanaConnection } from "@/infrastructures/external/solanaConnection";
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
-import type { Metrics } from "./types";
+import type { Metrics, recentBlocksType } from "./types";
 
 export async function fetchSolanaMetrics(): Promise<Metrics> {
   const connection = getSolanaConnection();
@@ -14,7 +14,7 @@ export async function fetchSolanaMetrics(): Promise<Metrics> {
       fetchSolanaPrice(),
     ]);
 
-  const recentBlocks = [];
+  const recentBlocks: recentBlocksType = [];
   for (let i = 0; i < 10; i++) {
     try {
       const slot = blockHeight! - i;
