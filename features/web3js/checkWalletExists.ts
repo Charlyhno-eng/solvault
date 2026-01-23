@@ -1,6 +1,6 @@
-import { getSolanaConnection } from "@/infrastructures/external/solana_connection";
+import { getSolanaConnection } from "@/infrastructures/external/solanaConnection";
 import { AccountInfo, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
-import { WalletInfo } from "./types";
+import type { WalletInfo } from "./types";
 
 export async function checkWalletExists(
   publicKeyString: string,

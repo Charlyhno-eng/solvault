@@ -13,3 +13,18 @@ export type SolanaWallet = {
   secretKeyBs58: string;
   keypair: Keypair;
 } | null;
+
+export type Metrics = {
+  solPrice: number;
+  avgTxFee: number;
+  avgBlockTime: number;
+  tps: number;
+  avgConfirmationTime: number;
+  recentBlocks: Array<{
+    slot: number;
+    blockTime: number | null;
+    numTx: number;
+    timestamp: string;
+  }>;
+  totalTx24h: number;
+};

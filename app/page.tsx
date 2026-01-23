@@ -1,4 +1,5 @@
 "use client";
+
 import { createSolanaWallet } from "@/features/web3js/createSolanaWallet";
 import { SolanaWallet } from "@/features/web3js/types";
 import { useState, useTransition } from "react";
@@ -28,7 +29,7 @@ export default function Home() {
         <button
           onClick={handleCreateWallet}
           disabled={isPending}
-          className="w-full py-4 px-6 bg-gradient-to-r from-[#21ecab] to-[#9548fc] text-white font-semibold text-lg rounded-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-4 px-6 bg-linear-to-r from-[#21ecab] to-[#9548fc] text-white font-semibold text-lg rounded-xl shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isPending ? "Creating..." : "Create Solana Wallet"}
         </button>

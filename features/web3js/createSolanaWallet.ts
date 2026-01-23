@@ -1,6 +1,6 @@
 import { Keypair } from "@solana/web3.js";
 import { decode, encode } from "bs58";
-import { SolanaWallet } from "./types";
+import type { SolanaWallet } from "./types";
 
 export async function createSolanaWallet(): Promise<SolanaWallet> {
   const keypair = Keypair.generate();

@@ -29,5 +29,5 @@ npm run dev
 ## Tech Stack
 
 Next.js 15 + Tailwind + shadcn/ui
-Prisma + local SQLite
+local SQLite
 @solana/web3.js
