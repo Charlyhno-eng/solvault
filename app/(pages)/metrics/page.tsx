@@ -5,7 +5,6 @@ import type { Metrics } from "@/features/web3js/types";
 import {
   formatIdWithHash,
   formatTimeAgo,
-  toString,
   unixToLocalTime,
 } from "@/helpers/commons/format";
 import { useEffect, useState } from "react";
@@ -127,7 +126,7 @@ function PageMetrics() {
                         <td className="font-mono pr-4">
                           {formatIdWithHash(block.slot)}
                         </td>
-                        <td className="pr-4">{toString(block.numTx)}</td>
+                        <td className="pr-4">{block.numTx}</td>
                         <td className="pr-4">
                           {unixToLocalTime(block.blockTime)}
                         </td>

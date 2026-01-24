@@ -8,15 +8,6 @@ export function formatIdWithHash(slot: number): string {
 }
 
 /**
- * Converts a number to its simple string representation.
- * @param numTx - The number to convert
- * @returns String representation of the number
- */
-export function toString(numTx: number): string {
-  return numTx.toString();
-}
-
-/**
  * Converts Unix timestamp (seconds) to local time string.
  * @param blockTime - Unix timestamp in seconds or null/undefined
  * @returns Formatted local time string (e.g. "22:45:00") or "N/A"
