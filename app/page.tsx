@@ -2,6 +2,7 @@
 
 import { createSolanaWallet } from "@/features/web3js/createSolanaWallet";
 import type { SolanaWallet } from "@/features/web3js/types";
+import ActionButton from "@/helpers/ui/ActionButton";
 import { useState, useTransition } from "react";
 
 export default function Home() {
@@ -14,36 +15,37 @@ export default function Home() {
   const handleCreateWallet = async () => {
     startTransition(async () => {
       setSaveStatus("saving");
+      setWallet(null);
+
       try {
         const newWallet = await createSolanaWallet();
+        if (!newWallet) throw new Error("Failed to generate wallet");
 
-        if (newWallet) {
-          const response = await fetch("/api/wallet", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              publicKey: newWallet.publicKey,
-              label: `Wallet #${Date.now()}`,
-            }),
-          });
+        const response = await fetch("/api/wallet", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            publicKey: newWallet.publicKey,
+            label: `Wallet #${Date.now()}`,
+            secretKeyBs58: newWallet.secretKeyBs58,
+          }),
+        });
 
-          if (response.ok) {
-            setWallet(newWallet);
-            setSaveStatus("saved");
-            console.log("NEW WALLET CREATED & SAVED via API:", newWallet);
-          } else {
-            setSaveStatus("error");
-          }
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || `HTTP ${response.status}`);
         }
+
+        setWallet(newWallet);
+        setSaveStatus("saved");
       } catch (error) {
         setSaveStatus("error");
-        console.error("Wallet creation failed:", error);
       }
     });
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-8">
+    <main className="h-[90vh] overflow-y-auto flex items-center justify-center p-8">
       <div className="max-w-md w-full space-y-8 text-center">
         <div className="space-y-4">
           <h1 className="text-5xl md:text-6xl font-black bg-linear-to-r from-[#21ecab] to-[#9548fc] bg-clip-text text-transparent drop-shadow-lg">
@@ -54,10 +56,11 @@ export default function Home() {
           </p>
         </div>
 
-        <button
+        <ActionButton
           onClick={handleCreateWallet}
           disabled={isPending}
-          className="w-full py-6 px-8 bg-linear-to-r from-[#21ecab] via-[#9548fc] to-[#21ecab] text-white font-bold text-xl rounded-2xl shadow-2xl hover:shadow-3xl transform hover:-translate-y-2 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-purple-500/25"
+          variant="primary"
+          className="w-full justify-center py-6 text-xl rounded-2xl"
         >
           {isPending ? (
             <span className="flex items-center gap-2">
@@ -65,9 +68,9 @@ export default function Home() {
               Creating...
             </span>
           ) : (
-            "Create Solana Wallet"
+            "+ New Solana Wallet"
           )}
-        </button>
+        </ActionButton>
 
         {saveStatus === "saved" && wallet && (
           <div className="backdrop-blur-xl rounded-2xl p-8 border border-green-400/30 shadow-2xl animate-in fade-in zoom-in duration-500">

@@ -2,6 +2,17 @@ import { getSolanaConnection } from "@/infrastructures/external/solanaConnection
 import { AccountInfo, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import type { WalletInfo } from "./types";
 
+/**
+ * Validates a wallet address and retrieves its current state information.
+ *
+ * @param publicKeyString - Base58-encoded public key string of the wallet to check
+ * @returns Promise<WalletInfo> - Wallet state containing:
+ *   - `balanceSOL`: Current balance in SOL (lamports converted to SOL)
+ *   - `dataLength`: Length of account data in bytes or null
+ *   - `owner`: Base58-encoded program owner of the account or null
+ *   - `isValidCurve`: Whether the public key is on the curve (validity check)
+ * @throws Error if public key is invalid or network request fails
+ */
 export async function checkWalletExists(
   publicKeyString: string,
 ): Promise<WalletInfo> {

@@ -22,12 +22,14 @@ This first version focuses on simple and secure management. Future versions will
 git clone https://github.com/Charlyhno-eng/solvault
 cd solvault
 npm install
+cd infrastructures/database
 sqlite3 data.sqlite < schema.sql
 ```
 
 To launch the application :
 
 ```bash
+cd ../..
 npm run dev
 ```
 

@@ -2,6 +2,15 @@ import { Keypair } from "@solana/web3.js";
 import { decode, encode } from "bs58";
 import type { SolanaWallet } from "./types";
 
+/**
+ * Generates a new random Solana wallet with public key and multiple secret key formats.
+ *
+ * @returns Promise<SolanaWallet> - Wallet object containing:
+ *   - `publicKey`: Base58-encoded public address string
+ *   - `secretKeyArray`: Secret key as Uint8Array converted to number array
+ *   - `secretKeyBs58`: Secret key encoded in Base58 string format
+ *   - `keypair`: Raw Solana Keypair object for direct use
+ */
 export async function createSolanaWallet(): Promise<SolanaWallet> {
   const keypair = Keypair.generate();
 

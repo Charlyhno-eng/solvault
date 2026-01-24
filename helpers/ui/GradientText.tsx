@@ -8,7 +8,7 @@ import {
 } from "motion/react";
 import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
-interface GradientTextProps {
+type GradientTextProps = {
   children: ReactNode;
   className?: string;
   colors?: string[];
@@ -17,7 +17,7 @@ interface GradientTextProps {
   direction?: "horizontal" | "vertical" | "diagonal";
   pauseOnHover?: boolean;
   yoyo?: boolean;
-}
+};
 
 export default function GradientText({
   children,

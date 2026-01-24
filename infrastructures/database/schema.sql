@@ -3,6 +3,7 @@ CREATE TABLE wallets (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   public_key TEXT UNIQUE NOT NULL,
   label TEXT,
+  secret_key_bs58 TEXT NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   notes TEXT
 );

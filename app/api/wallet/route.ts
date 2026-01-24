@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
       publicKey: body.publicKey,
     });
   } catch (error) {
+    console.error("Wallet save error:", error);
     return NextResponse.json(
       { error: "Failed to save wallet" },
       { status: 500 },

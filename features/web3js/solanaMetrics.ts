@@ -3,6 +3,18 @@ import { getSolanaConnection } from "@/infrastructures/external/solanaConnection
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import type { Metrics, recentBlocksType } from "./types";
 
+/**
+ * Fetches comprehensive blockchain network metrics including price, performance, and recent activity.
+ *
+ * @returns Promise<Metrics> - Object containing:
+ *   - `solPrice`: Current SOL token price in USD
+ *   - `avgTxFee`: Average transaction fee in SOL
+ *   - `avgBlockTime`: Average block production time in seconds
+ *   - `tps`: Transactions per second
+ *   - `avgConfirmationTime`: Average transaction confirmation time in seconds
+ *   - `recentBlocks`: Array of 10 most recent blocks with slot, time, and transaction count
+ *   - `totalTx24h`: Estimated total transactions in last 24 hours
+ */
 export async function fetchSolanaMetrics(): Promise<Metrics> {
   const connection = getSolanaConnection();
 
