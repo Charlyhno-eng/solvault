@@ -43,8 +43,8 @@ export default function RootLayout({
 
         {/* Navbar + Content */}
         <div className="relative z-40 min-h-screen">
-          <Navbar /> {/* ← Navbar toujours visible */}
-          <div className="pt-0">{children}</div> {/* Padding top 0 */}
+          <Navbar />
+          <div className="pt-0">{children}</div>
         </div>
       </body>
     </html>

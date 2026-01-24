@@ -2,14 +2,7 @@
 
 import WalletCard from "@/app/(pages)/mywallets/_components/WalletCard";
 import { useEffect, useState } from "react";
-
-type WalletDB = {
-  id: number;
-  public_key: string;
-  label: string | null;
-  created_at: string;
-  notes: string | null;
-};
+import type { WalletDB } from "./types";
 
 function PageMyWallets() {
   const [wallets, setWallets] = useState<WalletDB[]>([]);
@@ -83,6 +76,7 @@ function PageMyWallets() {
                 <WalletCard
                   key={wallet.id}
                   publicKey={wallet.public_key}
+                  secretKeyBs58={wallet.secret_key_bs58}
                   label={wallet.label || undefined}
                   createdAt={wallet.created_at}
                   notes={wallet.notes || undefined}
