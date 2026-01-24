@@ -12,6 +12,7 @@ export type SolanaWallet = {
   secretKeyArray: number[];
   secretKeyBs58: string;
   keypair: Keypair;
+  label?: string;
 } | null;
 
 export type Metrics = {

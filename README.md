@@ -6,7 +6,7 @@ You may also find managing multiple Solana wallets inconvenient. SolVault is an 
 
 This first version focuses on simple and secure management. Future versions will include a graphing system to visualize interactions with your wallets (similar to Obsidian), an automatic wallet splitting system once a certain amount is reached, and conversions to BTC, stablecoins, and Monero.
 
-![SolVault first overview](public/first_overview.png)
+![SolVault first overview](public/wallet_creation.png)
 
 ## Features
 
@@ -22,9 +22,10 @@ This first version focuses on simple and secure management. Future versions will
 git clone https://github.com/Charlyhno-eng/solvault
 cd solvault
 npm install
+sqlite3 data.sqlite < schema.sql
 ```
 
-In the /infrastructures/database folder you need to create a db.sqlite file.
+To launch the application :
 
 ```bash
 npm run dev
