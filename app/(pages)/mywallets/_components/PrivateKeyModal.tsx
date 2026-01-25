@@ -1,5 +1,6 @@
 "use client";
 
+import ButtonAction from "@/helpers/ui/ButtonAction";
 import { useEffect } from "react";
 
 type PrivateKeyModalProps = {
@@ -54,12 +55,11 @@ function PrivateKeyModal({
             </div>
           </div>
 
-          <button
-            onClick={handleCopy}
-            className="w-full bg-linear-to-r from-purple-500 to-blue-500 text-white py-3 px-6 rounded-xl font-medium hover:from-purple-600 hover:to-blue-600 transition-all shadow-lg hover:shadow-xl"
-          >
-            📋 Copy Private Key
-          </button>
+          <div className="flex justify-center">
+            <ButtonAction variant="primary" size="lg" onClick={handleCopy}>
+              📋 Copy Private Key
+            </ButtonAction>
+          </div>
 
           <p className="text-xs text-orange-400 text-center font-medium">
             ⚠️ Never share this key. Anyone with it controls your wallet.

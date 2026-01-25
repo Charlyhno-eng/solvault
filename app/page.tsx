@@ -2,7 +2,8 @@
 
 import { createSolanaWallet } from "@/features/web3js/createSolanaWallet";
 import type { SolanaWallet } from "@/features/web3js/types";
-import ActionButton from "@/helpers/ui/ActionButton";
+import ButtonAction from "@/helpers/ui/ButtonAction";
+import ButtonTransparent from "@/helpers/ui/ButtonTransparent";
 import { useState, useTransition } from "react";
 
 export default function Home() {
@@ -45,90 +46,74 @@ export default function Home() {
   };
 
   return (
-    <main className="h-[90vh] overflow-y-auto flex items-center justify-center p-8">
-      <div className="max-w-md w-full space-y-8 text-center">
-        <div className="space-y-4">
-          <h1 className="text-5xl md:text-6xl font-black bg-linear-to-r from-[#21ecab] to-[#9548fc] bg-clip-text text-transparent drop-shadow-lg">
-            SolVault
-          </h1>
-          <p className="text-xl text-white/80 max-w-sm mx-auto leading-relaxed">
-            Create and manage Solana wallets in one click
-          </p>
-        </div>
-
-        <ActionButton
-          onClick={handleCreateWallet}
-          disabled={isPending}
-          variant="primary"
-          className="w-full justify-center py-6 text-xl rounded-2xl"
-        >
-          {isPending ? (
-            <span className="flex items-center gap-2">
-              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              Creating...
-            </span>
-          ) : (
-            "+ New Solana Wallet"
-          )}
-        </ActionButton>
-
-        {saveStatus === "saved" && wallet && (
-          <div className="backdrop-blur-xl rounded-2xl p-8 border border-green-400/30 shadow-2xl animate-in fade-in zoom-in duration-500">
-            <div className="flex flex-col items-center space-y-4">
-              <div className="w-16 h-16 border-2 border-green-400/50 rounded-2xl flex items-center justify-center">
-                <svg
-                  className="w-8 h-8 text-green-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-
-              <h3 className="text-2xl font-bold text-white">
-                Wallet Created & Saved!
-              </h3>
-
-              <div className="w-full space-y-3 text-left text-sm">
-                <div className="p-4 rounded-xl border border-white/10">
-                  <p className="text-xs text-white/70 mb-1 font-medium">
-                    Public Key:
-                  </p>
-                  <p className="font-mono text-white break-all text-sm">
-                    {wallet.publicKey}
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-xl border border-white/10">
-                  <p className="text-xs text-white/70 mb-1 font-medium">
-                    Secret Key (bs58):
-                  </p>
-                  <code className="font-mono text-orange-400 text-xs break-all">
-                    {wallet.secretKeyBs58.slice(0, 32)}...
-                  </code>
-                </div>
-              </div>
-
-              <p className="text-green-400 text-sm font-medium">
-                ✅ Securely saved to database
-              </p>
+    <main className="h-[90vh] overflow-hidden flex items-center justify-center px-8 py-12">
+      <div className="w-[88rem] mx-auto flex items-center justify-between h-full gap-16">
+        <div className="flex-1 space-y-12 w-full max-w-5xl">
+          <div className="space-y-8">
+            <div className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extralight text-white/90 leading-[1.05] tracking-tight w-full">
+              <span className="font-semibold bg-gradient-to-r from-white to-white/50 bg-clip-text text-transparent inline">
+                Skip centralized exchanges <br />
+                that hold your data.
+              </span>
             </div>
-          </div>
-        )}
-
-        {saveStatus === "error" && (
-          <div className="backdrop-blur-xl rounded-2xl p-6 border border-red-400/30">
-            <p className="text-red-400 text-sm font-medium">
-              ❌ Failed to save wallet. Try again.
+            <p className="text-xl text-white/60 max-w-lg leading-relaxed font-light">
+              SolVault operates locally. You control your keys and interact
+              directly with the Solana blockchain without intermediaries. No
+              centralized exchange or application holding your information. Only
+              you and your cryptocurrency.
             </p>
           </div>
-        )}
+          <ButtonAction
+            onClick={handleCreateWallet}
+            disabled={isPending}
+            variant="primary"
+            size="lg"
+            className="w-48 text-base py-3 justify-center"
+          >
+            {isPending ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                Creating...
+              </>
+            ) : (
+              "+ Create Wallet"
+            )}
+          </ButtonAction>
+          {saveStatus === "saved" && wallet && (
+            <div className="backdrop-blur-xl rounded-2xl p-6 border border-green-400/30 shadow-2xl max-w-sm bg-black/20 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="flex flex-col items-center space-y-3 text-center">
+                <div className="w-14 h-14 border-2 border-green-400/50 rounded-xl flex items-center justify-center bg-green-500/10">
+                  <svg
+                    className="w-7 h-7 text-green-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white">
+                    Wallet Created!
+                  </h3>
+                  <p className="text-green-400 text-xs font-medium mt-1">
+                    ✅ Securely saved to database
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex-col gap-4 items-end self-end pb-8 hidden xl:flex">
+          <div className="flex-col gap-4 items-end self-end pb-8 hidden xl:flex">
+            <ButtonTransparent>Import Wallets</ButtonTransparent>
+            <ButtonTransparent>Export Wallets</ButtonTransparent>
+          </div>
+        </div>
       </div>
     </main>
   );

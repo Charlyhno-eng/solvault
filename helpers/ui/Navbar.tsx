@@ -1,5 +1,6 @@
 "use client";
 
+import ButtonTransparent from "@/helpers/ui/ButtonTransparent";
 import { SolanaColors } from "@/helpers/ui/ColorTheme";
 import GradientText from "@/helpers/ui/GradientText";
 import Link from "next/link";
@@ -39,18 +40,12 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center space-x-2 md:space-x-4 min-w-0 shrink-0">
-          <button
-            onClick={() => router.push("/mywallets")}
-            className="px-4 py-2 text-sm font-medium text-white/90 hover:text-white transition-all duration-200 border border-white/20 rounded-lg backdrop-blur-sm hover:bg-white/5 whitespace-nowrap"
-          >
+          <ButtonTransparent onClick={() => router.push("/mywallets")}>
             My wallets
-          </button>
-          <button
-            onClick={() => router.push("/metrics")}
-            className="px-4 py-2 text-sm font-medium text-white/90 hover:text-white transition-all duration-200 border border-white/20 rounded-lg backdrop-blur-sm hover:bg-white/5 active:scale-95 whitespace-nowrap"
-          >
+          </ButtonTransparent>
+          <ButtonTransparent onClick={() => router.push("/metrics")}>
             Solana metrics
-          </button>
+          </ButtonTransparent>
         </div>
       </div>
     </nav>
