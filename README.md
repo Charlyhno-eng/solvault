@@ -6,7 +6,7 @@ You may also find managing multiple Solana wallets inconvenient. SolVault is an 
 
 This first version focuses on simple and secure management. Future versions will include a graphing system to visualize interactions with your wallets (similar to Obsidian), an automatic wallet splitting system once a certain amount is reached, and conversions to BTC, stablecoins, and Monero.
 
-![SolVault home page](public/home_page.png)
+![SolVault home page](public/main.png)
 ![Solana metrics](public/solana_metrics.png)
 ![View wallets](public/view_wallets.png)
 
