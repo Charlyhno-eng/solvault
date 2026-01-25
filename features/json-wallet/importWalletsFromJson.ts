@@ -1,14 +1,18 @@
-export type WalletJson = {
-  publicKey: string;
-  secretKeyBs58: string;
-  label?: string;
-};
+import { ImportStats, WalletJson } from "./types";
 
-export type ImportStats = {
-  success: number;
-  error: number;
-};
-
+/**
+ * Opens a native file picker for JSON wallet files and imports them into the database.
+ *
+ * @returns Promise<ImportStats> - Resolves with import statistics containing:
+ * @returns { success: number } - Number of wallets successfully imported
+ * @returns { error: number } - Number of wallets that failed to import (duplicates/network errors)
+ *
+ * @throws Error - When no valid wallets found in selected files
+ *
+ * @example
+ * const result = await importWalletsFromJson();
+ * console.log(`${result.success} successful, ${result.error} errors`);
+ */
 export function importWalletsFromJson(): Promise<ImportStats> {
   return new Promise((resolve, reject) => {
     const input = document.createElement("input");
