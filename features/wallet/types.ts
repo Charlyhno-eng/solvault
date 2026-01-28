@@ -1,7 +1,7 @@
 export type WalletInsert = {
   publicKey: string;
-  label: string;
   secretKeyBs58: string;
+  label?: string | null;
 };
 
 export type WalletTableType = {

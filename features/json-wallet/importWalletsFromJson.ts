@@ -1,12 +1,16 @@
 import type { WalletTableType } from "@/features/wallet/types";
+import { decryptWallets } from "./crypto";
 
 /**
- * Opens a native file picker for JSON wallet files and imports them into the database.
+ * Opens a native file picker for encrypted JSON wallet files (wallets.enc.json) and imports them into the database.
  *
- * @returns { success: number } - Number of wallets successfully imported
- * @returns { error: number } - Number of wallets that failed to import (duplicates/network errors)
+ * Automatically decrypts encrypted wallet files using AES-256-GCM, validates data, and imports via API.
  *
- * @throws Error - When no valid wallets found in selected files
+ * @returns Promise<{ success: number; error: number }> - Import statistics
+ * @returns { success: number } - Number of wallets successfully imported to database
+ * @returns { error: number } - Number of wallets that failed (duplicates, validation errors, network issues)
+ *
+ * @throws Error - When no valid wallets found after decryption/parsing or file picker canceled
  *
  * @example
  * const result = await importWalletsFromJson();
@@ -38,11 +42,7 @@ export function importWalletsFromJson(): Promise<{
       for (const file of Array.from(files)) {
         try {
           const text = await file.text();
-          const walletsData = JSON.parse(text) as Array<{
-            publicKey: string;
-            secretKeyBs58: string;
-            label?: string;
-          }>;
+          const walletsData = decryptWallets(text);
 
           for (const walletData of walletsData) {
             if (
@@ -68,7 +68,7 @@ export function importWalletsFromJson(): Promise<{
           }
         } catch (parseError) {
           errors.push(
-            `Failed to parse ${file.name}: ${(parseError as Error).message}`,
+            `Failed to decrypt/parse ${file.name}: ${(parseError as Error).message}`,
           );
         }
       }

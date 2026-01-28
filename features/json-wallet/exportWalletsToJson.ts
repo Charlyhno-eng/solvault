@@ -1,11 +1,16 @@
 /**
- * Exports all wallets to a downloadable JSON file.
+ * Downloads all encrypted wallets as `wallets.enc.json` from the server API.
  *
- * @returns Promise<void> - Triggers browser download of wallets.json
+ * Triggers a native browser download of encrypted wallet data. The file is already
+ * encrypted server-side using AES-256-GCM before transmission.
+ *
+ * @returns Promise<void> - Resolves when download completes successfully
+ *
+ * @throws Error - When API request fails, network error occurs, or download fails
  *
  * @example
  * await exportWalletsToJson();
- * // Browser downloads 'wallets.json' with all wallet data
+ * // Browser downloads 'wallets.enc.json' (already encrypted)
  */
 export async function exportWalletsToJson(): Promise<void> {
   try {
@@ -22,7 +27,7 @@ export async function exportWalletsToJson(): Promise<void> {
     const link = document.createElement("a");
 
     link.href = url;
-    link.download = "wallets.json";
+    link.download = "wallets.enc.json";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

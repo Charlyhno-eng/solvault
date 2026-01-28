@@ -1,28 +1,28 @@
+import { encryptWallets } from "@/features/json-wallet/crypto";
 import { getWallets } from "@/features/wallet/queries";
-import type { WalletTableType } from "@/features/wallet/types";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const wallets: WalletTableType[] = getWallets();
+    const wallets = getWallets();
 
     if (wallets.length === 0) {
       return NextResponse.json({ error: "No wallets found" }, { status: 404 });
     }
 
-    const exportData = wallets.map((wallet: WalletTableType) => ({
+    const exportData = wallets.map((wallet) => ({
       publicKey: wallet.public_key,
       secretKeyBs58: wallet.secret_key_bs58,
       label: wallet.label || undefined,
     }));
 
-    const jsonString = JSON.stringify(exportData, null, 2);
+    const encryptedJson = encryptWallets(exportData);
 
-    return new NextResponse(jsonString, {
+    return new NextResponse(encryptedJson, {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-        "Content-Disposition": "attachment; filename=wallets.json",
+        "Content-Disposition": "attachment; filename=wallets.enc.json",
       },
     });
   } catch (error) {
