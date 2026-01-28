@@ -7,7 +7,7 @@ export type WalletInfo = {
   isValidCurve: boolean;
 };
 
-export type SolanaWallet = {
+export type WalletPossiblyNull = {
   publicKey: string;
   secretKeyArray: number[];
   secretKeyBs58: string;

@@ -1,11 +1,11 @@
 "use client";
 
 import WalletCard from "@/app/(pages)/mywallets/_components/WalletCard";
+import type { WalletTableType } from "@/features/wallet/types";
 import { useEffect, useState } from "react";
-import type { WalletDB } from "./types";
 
 function PageMyWallets() {
-  const [wallets, setWallets] = useState<WalletDB[]>([]);
+  const [wallets, setWallets] = useState<WalletTableType[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedWallet, setCopiedWallet] = useState<string | null>(null);
 

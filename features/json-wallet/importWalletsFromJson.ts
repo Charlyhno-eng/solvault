@@ -1,9 +1,8 @@
-import { ImportStats, WalletJson } from "./types";
+import type { WalletTableType } from "@/features/wallet/types";
 
 /**
  * Opens a native file picker for JSON wallet files and imports them into the database.
  *
- * @returns Promise<ImportStats> - Resolves with import statistics containing:
  * @returns { success: number } - Number of wallets successfully imported
  * @returns { error: number } - Number of wallets that failed to import (duplicates/network errors)
  *
@@ -13,7 +12,10 @@ import { ImportStats, WalletJson } from "./types";
  * const result = await importWalletsFromJson();
  * console.log(`${result.success} successful, ${result.error} errors`);
  */
-export function importWalletsFromJson(): Promise<ImportStats> {
+export function importWalletsFromJson(): Promise<{
+  success: number;
+  error: number;
+}> {
   return new Promise((resolve, reject) => {
     const input = document.createElement("input");
     input.type = "file";
@@ -30,31 +32,38 @@ export function importWalletsFromJson(): Promise<ImportStats> {
         return;
       }
 
-      const importedWallets: WalletJson[] = [];
+      const importedWallets: Omit<WalletTableType, "id" | "created_at">[] = [];
       const errors: string[] = [];
 
       for (const file of Array.from(files)) {
         try {
           const text = await file.text();
-          const walletsData = JSON.parse(text) as WalletJson[];
+          const walletsData = JSON.parse(text) as Array<{
+            publicKey: string;
+            secretKeyBs58: string;
+            label?: string;
+          }>;
 
-          for (const wallet of walletsData) {
-            if (!wallet.publicKey || typeof wallet.publicKey !== "string") {
+          for (const walletData of walletsData) {
+            if (
+              !walletData.publicKey ||
+              typeof walletData.publicKey !== "string"
+            ) {
               errors.push(`Invalid publicKey in ${file.name}`);
               continue;
             }
             if (
-              !wallet.secretKeyBs58 ||
-              typeof wallet.secretKeyBs58 !== "string"
+              !walletData.secretKeyBs58 ||
+              typeof walletData.secretKeyBs58 !== "string"
             ) {
               errors.push(`Invalid secretKeyBs58 in ${file.name}`);
               continue;
             }
 
             importedWallets.push({
-              publicKey: wallet.publicKey,
-              secretKeyBs58: wallet.secretKeyBs58,
-              label: wallet.label || `Imported from ${file.name}`,
+              public_key: walletData.publicKey,
+              secret_key_bs58: walletData.secretKeyBs58,
+              label: walletData.label || `Imported from ${file.name}`,
             });
           }
         } catch (parseError) {
@@ -77,7 +86,11 @@ export function importWalletsFromJson(): Promise<ImportStats> {
           const response = await fetch("/api/wallet", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(wallet),
+            body: JSON.stringify({
+              publicKey: wallet.public_key,
+              label: wallet.label,
+              secretKeyBs58: wallet.secret_key_bs58,
+            }),
           });
 
           if (response.ok) successCount++;

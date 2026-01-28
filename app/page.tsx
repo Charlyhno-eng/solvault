@@ -1,15 +1,16 @@
 "use client";
 
+import { exportWalletsToJson } from "@/features/json-wallet/exportWalletsToJson";
 import { importWalletsFromJson } from "@/features/json-wallet/importWalletsFromJson";
 import { createSolanaWallet } from "@/features/web3js/createSolanaWallet";
-import type { SolanaWallet } from "@/features/web3js/types";
+import type { WalletPossiblyNull } from "@/features/web3js/types";
 import ButtonAction from "@/helpers/ui/ButtonAction";
 import ButtonTransparent from "@/helpers/ui/ButtonTransparent";
 import StatusCard from "@/helpers/ui/StatusCard";
 import { useState, useTransition } from "react";
 
 export default function Home() {
-  const [wallet, setWallet] = useState<SolanaWallet>(null);
+  const [wallet, setWallet] = useState<WalletPossiblyNull>(null);
   const [isPending, startTransition] = useTransition();
   const [saveStatus, setSaveStatus] = useState<
     "idle" | "saving" | "saved" | "error"
@@ -79,6 +80,23 @@ export default function Home() {
     setTimeout(() => setImportStatus(null), 5000);
   };
 
+  const handleExport = async () => {
+    try {
+      await exportWalletsToJson();
+      setImportStatus({
+        message: "Wallets exported successfully! Check your downloads folder",
+        type: "success",
+      });
+    } catch (error) {
+      setImportStatus({
+        message: error instanceof Error ? error.message : "Export failed",
+        type: "error",
+      });
+    }
+
+    setTimeout(() => setImportStatus(null), 5000);
+  };
+
   return (
     <main className="h-[90vh] overflow-hidden flex items-center justify-center px-8 py-12">
       <div className="w-[88rem] mx-auto flex items-center justify-between h-full gap-16">
@@ -131,11 +149,13 @@ export default function Home() {
           )}
         </div>
 
-        <div className="flex flex-col gap-4 items-end self-end pb-8 hidden xl:flex">
+        <div className="flex-col gap-4 items-end self-end pb-8 hidden xl:flex">
           <ButtonTransparent onClick={handleImport}>
             Import Wallets
           </ButtonTransparent>
-          <ButtonTransparent>Export Wallets</ButtonTransparent>
+          <ButtonTransparent onClick={handleExport}>
+            Export Wallets
+          </ButtonTransparent>
         </div>
       </div>
     </main>
