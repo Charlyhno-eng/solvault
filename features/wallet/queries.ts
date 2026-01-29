@@ -37,3 +37,14 @@ export function getWallet(publicKey: string): WalletTableType | null {
     .prepare("SELECT * FROM wallets WHERE public_key = ?")
     .get(publicKey) as WalletTableType | null;
 }
+
+/**
+ * Deletes a wallet by its ID.
+ *
+ * @param walletId - Numeric ID of wallet to delete
+ * @returns DeleteResult - Database delete operation result
+ */
+export function deleteWallet(walletId: number): { changes: number } {
+  const stmt = db.prepare("DELETE FROM wallets WHERE id = ?");
+  return stmt.run(walletId);
+}

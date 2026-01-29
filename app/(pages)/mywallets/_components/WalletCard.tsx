@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import DeleteWalletButton from "./DeleteWalletButton";
 import PrivateKeyModal from "./PrivateKeyModal";
 import WalletDetails from "./WalletDetails";
 import WalletHeader from "./WalletHeader";
 
 type WalletCardProps = {
+  walletId: number;
   publicKey: string;
   secretKeyBs58: string;
   label?: string;
@@ -13,9 +15,11 @@ type WalletCardProps = {
   notes?: string;
   onCopy: () => void;
   copied: boolean;
+  onDelete?: () => void;
 };
 
 function WalletCard({
+  walletId,
   publicKey,
   secretKeyBs58,
   label,
@@ -23,6 +27,7 @@ function WalletCard({
   notes,
   onCopy,
   copied,
+  onDelete,
 }: WalletCardProps) {
   const [showPrivateKey, setShowPrivateKey] = useState(false);
   const shortAddress = `${publicKey.slice(0, 8)}...${publicKey.slice(-8)}`;
@@ -36,12 +41,19 @@ function WalletCard({
           onCopy={onCopy}
           copied={copied}
         />
-        <WalletDetails
-          address={shortAddress}
-          onCopy={onCopy}
-          notes={notes}
-          onRevealPrivateKey={() => setShowPrivateKey(true)}
-        />
+        <div className="flex items-center justify-between gap-3 mt-4">
+          <WalletDetails
+            address={shortAddress}
+            onCopy={onCopy}
+            notes={notes}
+            onRevealPrivateKey={() => setShowPrivateKey(true)}
+          />
+          <DeleteWalletButton
+            walletId={walletId}
+            onDeleteSuccess={onDelete}
+            className="shrink-0 self-end"
+          />
+        </div>
       </div>
       <PrivateKeyModal
         secretKeyBs58={secretKeyBs58}

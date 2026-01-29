@@ -1,19 +1,19 @@
 "use client";
 
-import WalletCard from "@/app/(pages)/mywallets/_components/WalletCard";
 import type { WalletTableType } from "@/features/wallet/types";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import WalletCard from "./_components/WalletCard";
 
 function PageMyWallets() {
   const [wallets, setWallets] = useState<WalletTableType[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedWallet, setCopiedWallet] = useState<string | null>(null);
 
-  useEffect(function () {
+  useEffect(() => {
     fetchWallets();
   }, []);
 
-  async function fetchWallets() {
+  const fetchWallets = useCallback(async () => {
     try {
       const response = await fetch("/api/wallet");
       const data = await response.json();
@@ -23,13 +23,17 @@ function PageMyWallets() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  function handleCopy(publicKey: string) {
+  const handleCopy = (publicKey: string) => {
     navigator.clipboard.writeText(publicKey);
     setCopiedWallet(publicKey);
     setTimeout(() => setCopiedWallet(null), 2000);
-  }
+  };
+
+  const handleWalletDelete = useCallback(() => {
+    fetchWallets();
+  }, [fetchWallets]);
 
   if (loading) {
     return (
@@ -71,20 +75,20 @@ function PageMyWallets() {
       ) : (
         <div className="w-[88rem] mx-auto px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {wallets.map(function (wallet) {
-              return (
-                <WalletCard
-                  key={wallet.id}
-                  publicKey={wallet.public_key}
-                  secretKeyBs58={wallet.secret_key_bs58}
-                  label={wallet.label || undefined}
-                  createdAt={wallet.created_at}
-                  notes={wallet.notes || undefined}
-                  onCopy={() => handleCopy(wallet.public_key)}
-                  copied={copiedWallet === wallet.public_key}
-                />
-              );
-            })}
+            {wallets.map((wallet) => (
+              <WalletCard
+                key={wallet.id}
+                walletId={wallet.id}
+                publicKey={wallet.public_key}
+                secretKeyBs58={wallet.secret_key_bs58}
+                label={wallet.label || undefined}
+                createdAt={wallet.created_at}
+                notes={wallet.notes || undefined}
+                onCopy={() => handleCopy(wallet.public_key)}
+                copied={copiedWallet === wallet.public_key}
+                onDelete={handleWalletDelete}
+              />
+            ))}
           </div>
         </div>
       )}
