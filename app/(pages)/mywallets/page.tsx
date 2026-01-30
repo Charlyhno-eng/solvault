@@ -9,13 +9,9 @@ function PageMyWallets() {
   const [loading, setLoading] = useState(true);
   const [copiedWallet, setCopiedWallet] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchWallets();
-  }, []);
-
   const fetchWallets = useCallback(async () => {
     try {
-      const response = await fetch("/api/wallet");
+      const response = await fetch("/api/wallet", { cache: "no-store" });
       const data = await response.json();
       setWallets(data);
     } catch (error) {
@@ -24,6 +20,10 @@ function PageMyWallets() {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    fetchWallets();
+  }, [fetchWallets]);
 
   const handleCopy = (publicKey: string) => {
     navigator.clipboard.writeText(publicKey);
@@ -34,6 +34,15 @@ function PageMyWallets() {
   const handleWalletDelete = useCallback(() => {
     fetchWallets();
   }, [fetchWallets]);
+
+  const handleWalletLabelChange = useCallback(
+    (walletId: number, newLabel: string) => {
+      setWallets((prev) =>
+        prev.map((w) => (w.id === walletId ? { ...w, label: newLabel } : w)),
+      );
+    },
+    [],
+  );
 
   if (loading) {
     return (
@@ -87,6 +96,9 @@ function PageMyWallets() {
                 onCopy={() => handleCopy(wallet.public_key)}
                 copied={copiedWallet === wallet.public_key}
                 onDelete={handleWalletDelete}
+                onLabelChange={(newLabel) =>
+                  handleWalletLabelChange(wallet.id, newLabel)
+                }
               />
             ))}
           </div>

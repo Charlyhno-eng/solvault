@@ -27,18 +27,6 @@ export function getWallets(): WalletTableType[] {
 }
 
 /**
- * Retrieves a single wallet by its public key.
- *
- * @param publicKey - Public key string to lookup
- * @returns Wallet record matching the public key or null if not found
- */
-export function getWallet(publicKey: string): WalletTableType | null {
-  return db
-    .prepare("SELECT * FROM wallets WHERE public_key = ?")
-    .get(publicKey) as WalletTableType | null;
-}
-
-/**
  * Deletes a wallet by its ID.
  *
  * @param walletId - Numeric ID of wallet to delete
@@ -47,4 +35,19 @@ export function getWallet(publicKey: string): WalletTableType | null {
 export function deleteWallet(walletId: number): { changes: number } {
   const stmt = db.prepare("DELETE FROM wallets WHERE id = ?");
   return stmt.run(walletId);
+}
+
+/**
+ * Updates wallet label by ID.
+ *
+ * @param walletId - Numeric ID of wallet to update
+ * @param label - New label (string or null for empty)
+ * @returns UpdateResult - Database update operation result
+ */
+export function updateWalletLabel(
+  walletId: number,
+  label: string | null,
+): { changes: number } {
+  const stmt = db.prepare("UPDATE wallets SET label = ? WHERE id = ?");
+  return stmt.run(label, walletId);
 }

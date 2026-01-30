@@ -1,6 +1,6 @@
 "use client";
 
-import ButtonAction from "@/helpers/ui/ButtonAction";
+import ButtonAction from "@/helpers/ui/MyComponents/ButtonAction";
 import { useEffect } from "react";
 
 type PrivateKeyModalProps = {

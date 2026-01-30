@@ -1,13 +1,19 @@
 "use client";
 
-import ButtonTransparent from "@/helpers/ui/ButtonTransparent";
-import { SolanaColors } from "@/helpers/ui/ColorTheme";
-import GradientText from "@/helpers/ui/GradientText";
+import { SolanaColors } from "@/helpers/ui/Layout/ColorTheme";
+import GradientText from "@/helpers/ui/Layout/GradientText";
+import ButtonTransparent from "@/helpers/ui/MyComponents/ButtonTransparent";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const router = useRouter();
+
+  const navItems = [
+    { label: "My wallets", href: "/mywallets" },
+    { label: "Transfer", href: "/transfer" },
+    { label: "Solana metrics", href: "/metrics" },
+  ];
 
   return (
     <nav className="w-full px-6 py-4 backdrop-blur-sm z-50 border-b border-white/10 sticky top-0">
@@ -40,12 +46,11 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center space-x-2 md:space-x-4 min-w-0 shrink-0">
-          <ButtonTransparent onClick={() => router.push("/mywallets")}>
-            My wallets
-          </ButtonTransparent>
-          <ButtonTransparent onClick={() => router.push("/metrics")}>
-            Solana metrics
-          </ButtonTransparent>
+          {navItems.map(({ label, href }) => (
+            <ButtonTransparent key={href} onClick={() => router.push(href)}>
+              {label}
+            </ButtonTransparent>
+          ))}
         </div>
       </div>
     </nav>

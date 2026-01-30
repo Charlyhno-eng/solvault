@@ -4,9 +4,9 @@ import { exportWalletsToJson } from "@/features/json-wallet/exportWalletsToJson"
 import { importWalletsFromJson } from "@/features/json-wallet/importWalletsFromJson";
 import { createSolanaWallet } from "@/features/web3js/createSolanaWallet";
 import type { WalletPossiblyNull } from "@/features/web3js/types";
-import ButtonAction from "@/helpers/ui/ButtonAction";
-import ButtonTransparent from "@/helpers/ui/ButtonTransparent";
-import StatusCard from "@/helpers/ui/StatusCard";
+import ButtonAction from "@/helpers/ui/MyComponents/ButtonAction";
+import ButtonTransparent from "@/helpers/ui/MyComponents/ButtonTransparent";
+import StatusCard from "@/helpers/ui/MyComponents/StatusCard";
 import { useState, useTransition } from "react";
 
 export default function Home() {

@@ -1,7 +1,6 @@
 "use client";
 
-import StatusCard from "@/helpers/ui/StatusCard";
-import { cn } from "@/lib/utils";
+import StatusCard from "@/helpers/ui/MyComponents/StatusCard";
 import { useState, useTransition } from "react";
 
 type DeleteWalletButtonProps = {
@@ -41,7 +40,8 @@ export default function DeleteWalletButton({
           throw new Error(errorData.error || "Failed to delete wallet");
         }
 
-        const result = await response.json();
+        await response.json();
+
         setDeleteStatus({
           message: `Wallet #${walletId} deleted successfully`,
           type: "success",
@@ -65,15 +65,11 @@ export default function DeleteWalletButton({
       <button
         onClick={handleDelete}
         disabled={isDeleting || isPending}
-        className={cn(
-          "relative px-3 py-1 text-xs font-medium rounded-md transition-all duration-200 border flex items-center gap-1.5 shadow-sm",
-          "border-red-500/60 bg-red-500/20 text-red-300 hover:bg-red-500/30 hover:border-red-500/80 hover:shadow-md active:scale-95 active:top-[-8px] disabled:opacity-50 disabled:cursor-not-allowed",
-          className,
-        )}
+        className={`px-3 py-1 text-xs font-semibold border rounded-md flex items-center gap-1.5 transition-all ${className}`}
       >
         {isDeleting ? (
           <>
-            <div className="w-2.5 h-2.5 border-2 border-red-400/50 border-t-red-400 rounded-full animate-spin" />
+            <div className="w-2.5 h-2.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             <span className="font-medium">Deleting...</span>
           </>
         ) : (

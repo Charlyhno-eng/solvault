@@ -1,5 +1,5 @@
-import DarkVeil from "@/helpers/ui/DarkVeil";
-import Navbar from "@/helpers/ui/Navbar";
+import DarkVeil from "@/helpers/ui/Layout/DarkVeil";
+import Navbar from "@/helpers/ui/Layout/Navbar";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";

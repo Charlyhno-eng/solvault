@@ -1,4 +1,4 @@
-import { deleteWallet } from "@/features/wallet/queries";
+import { deleteWallet, updateWalletLabel } from "@/features/wallet/queries";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(
@@ -38,6 +38,47 @@ export async function DELETE(
     console.error("Delete wallet error:", error);
     return NextResponse.json(
       { error: "Failed to delete wallet" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const { id } = await params;
+    const body = await request.json();
+
+    if (!id || isNaN(Number(id))) {
+      return NextResponse.json({ error: "Invalid wallet ID" }, { status: 400 });
+    }
+
+    const walletId = Number(id);
+    const label = body.label;
+
+    if (label !== undefined && typeof label !== "string" && label !== null) {
+      return NextResponse.json(
+        { error: "Label must be string or null" },
+        { status: 400 },
+      );
+    }
+
+    const result = updateWalletLabel(walletId, label);
+
+    if (result.changes === 0) {
+      return NextResponse.json({ error: "Wallet not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(
+      { success: true, walletId, label, changes: result.changes },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("Update wallet label error:", error);
+    return NextResponse.json(
+      { error: "Failed to update wallet label" },
       { status: 500 },
     );
   }
