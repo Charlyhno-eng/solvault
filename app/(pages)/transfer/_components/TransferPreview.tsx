@@ -13,7 +13,7 @@ import {
 import { ArrowRight, Copy, Shield, Zap } from "lucide-react";
 import Image from "next/image";
 
-interface TransferPreviewProps {
+type TransferPreviewProps = {
   transferData: {
     fromWalletId: number;
     toWalletId?: number;
@@ -21,7 +21,7 @@ interface TransferPreviewProps {
     amount: string;
   } | null;
   wallets: WalletTableType[];
-}
+};
 
 export default function TransferPreview({
   transferData,
@@ -55,7 +55,7 @@ export default function TransferPreview({
     : null;
 
   const amount = Number(transferData.amount) || 0;
-  const fee = 0.000005; // Fee fixe Solana
+  const fee = 0.000005;
   const total = amount + fee;
 
   const copyAddress = (address: string) => {
@@ -80,12 +80,7 @@ export default function TransferPreview({
         </CardHeader>
 
         <CardContent className="space-y-3 flex-1">
-          {" "}
-          {/* ✅ space-y-3 réduit de space-y-6 */}
-          {/* From Wallet */}
           <div className="space-y-1">
-            {" "}
-            {/* ✅ space-y-1 réduit de space-y-3 */}
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse" />
               <span className="text-sm font-semibold text-red-400 uppercase tracking-wider">
@@ -122,16 +117,14 @@ export default function TransferPreview({
               </Button>
             </div>
           </div>
-          {/* Arrow - ✅ Réduit py-4 → py-2 */}
+
           <div className="flex items-center justify-center py-2">
             <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center border-2 border-white/20">
               <ArrowRight className="w-8 h-8 text-white/40" />
             </div>
           </div>
-          {/* To Wallet */}
+
           <div className="space-y-1">
-            {" "}
-            {/* ✅ space-y-1 réduit de space-y-3 */}
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-green-400 rounded-full" />
               <span className="text-sm font-semibold text-green-400 uppercase tracking-wider">
@@ -167,16 +160,18 @@ export default function TransferPreview({
                 size="sm"
                 className="h-8 w-8 p-0 text-white/70 hover:text-white hover:bg-white/20"
                 onClick={() => {
-                  if (toWallet) copyAddress(toWallet.public_key);
-                  else if (transferData.toAddress)
+                  if (toWallet) {
+                    copyAddress(toWallet.public_key);
+                  } else if (transferData.toAddress) {
                     copyAddress(transferData.toAddress);
+                  }
                 }}
               >
                 <Copy className="w-4 h-4" />
               </Button>
             </div>
           </div>
-          {/* Amount Details */}
+
           <div className="space-y-4 pt-4 border-t border-white/10">
             <div className="space-y-2">
               <div className="flex justify-between text-sm text-white/60">
@@ -203,7 +198,7 @@ export default function TransferPreview({
               </div>
             </div>
           </div>
-          {/* Security & Confirm */}
+
           <div className="space-y-3 pt-4 border-t border-white/10">
             <div className="flex items-center gap-2 text-xs text-white/60">
               <Shield className="w-4 h-4" />

@@ -11,7 +11,6 @@ export const useSolPrice = () => {
       const priceData = await fetchSolanaPrice();
       setPrice(Number(priceData));
     } catch (error) {
-      console.error("Failed to fetch SOL price:", error);
       setPrice(0);
     } finally {
       setLoading(false);
@@ -20,7 +19,6 @@ export const useSolPrice = () => {
 
   useEffect(() => {
     fetchPrice();
-    // Refresh every 60 seconds
     const interval = setInterval(fetchPrice, 60000);
     return () => clearInterval(interval);
   }, [fetchPrice]);
