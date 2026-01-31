@@ -55,8 +55,7 @@ function WalletCard({
         if (!cancelled && data.balance !== undefined) {
           setBalance(Number(data.balance));
         }
-      } catch (e) {
-        console.error("Failed to fetch SOL balance for", publicKey, e);
+      } catch (error) {
         if (!cancelled) {
           setBalance(null);
         }

@@ -23,8 +23,9 @@ export default function DeleteWalletButton({
   const [isPending, startTransition] = useTransition();
 
   const handleDelete = () => {
-    if (!confirm("Are you sure you want to permanently delete this wallet?"))
+    if (!confirm("Are you sure you want to permanently delete this wallet?")) {
       return;
+    }
 
     startTransition(async () => {
       setIsDeleting(true);

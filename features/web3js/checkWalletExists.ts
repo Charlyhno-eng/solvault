@@ -30,11 +30,6 @@ export async function checkWalletExists(
     const owner = accountInfo?.owner?.toBase58() || null;
     const isValidCurve = PublicKey.isOnCurve(publicKey.toBytes());
 
-    console.log("Balance SOL:", balanceSOL);
-    console.log("Data length:", dataLength);
-    console.log("Owner:", owner);
-    console.log("Clé valide ?", isValidCurve);
-
     return { balanceSOL, dataLength, owner, isValidCurve };
   } catch (error) {
     console.error("Error check wallet:", error);

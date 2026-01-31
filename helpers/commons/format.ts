@@ -13,7 +13,10 @@ export function formatIdWithHash(slot: number): string {
  * @returns Formatted local time string (e.g. "22:45:00") or "N/A"
  */
 export function unixToLocalTime(blockTime: number | undefined | null): string {
-  if (!blockTime) return "N/A";
+  if (!blockTime) {
+    return "N/A";
+  }
+
   return new Date(blockTime * 1000).toLocaleTimeString();
 }
 
@@ -23,7 +26,10 @@ export function unixToLocalTime(blockTime: number | undefined | null): string {
  * @returns String like "5m" or "N/A" if no timestamp
  */
 export function formatTimeAgo(blockTime: number | undefined | null): string {
-  if (!blockTime) return "N/A";
+  if (!blockTime) {
+    return "N/A";
+  }
+
   const minutesAgo = Math.floor((Date.now() / 1000 - blockTime) / 60);
   return `${minutesAgo}m`;
 }

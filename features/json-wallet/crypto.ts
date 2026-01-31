@@ -30,7 +30,9 @@ export function decryptWallets(encryptedData: string): WalletInsert[] {
     const decrypted = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY);
     const jsonString = decrypted.toString(CryptoJS.enc.Utf8);
 
-    if (!jsonString) throw new Error("Invalid encryption format");
+    if (!jsonString) {
+      throw new Error("Invalid encryption format");
+    }
 
     return JSON.parse(jsonString);
   } catch (error) {

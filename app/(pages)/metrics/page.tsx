@@ -18,7 +18,6 @@ function PageMetrics() {
     try {
       setMetrics(await fetchSolanaMetrics());
     } catch (error) {
-      console.error("Error fetching metrics:", error);
       setMetrics(null);
     } finally {
       setLoading(false);

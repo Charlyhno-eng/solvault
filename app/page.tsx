@@ -28,7 +28,9 @@ export default function Home() {
 
       try {
         const newWallet = await createSolanaWallet();
-        if (!newWallet) throw new Error("Failed to generate wallet");
+        if (!newWallet) {
+          throw new Error("Failed to generate wallet");
+        }
 
         const response = await fetch("/api/wallet", {
           method: "POST",

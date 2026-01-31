@@ -25,7 +25,9 @@ function WalletHeader({
   const [isUpdating, setIsUpdating] = useState(false);
 
   const commit = async () => {
-    if (isUpdating) return;
+    if (isUpdating) {
+      return;
+    }
 
     const next = editLabel.trim();
     if (!next) {
@@ -43,7 +45,9 @@ function WalletHeader({
         body: JSON.stringify({ label: next }),
       });
 
-      if (!response.ok) throw new Error("Update failed");
+      if (!response.ok) {
+        throw new Error("Update failed");
+      }
 
       onLabelChange?.(next);
       setIsEditing(false);

@@ -93,8 +93,11 @@ export function importWalletsFromJson(): Promise<{
             }),
           });
 
-          if (response.ok) successCount++;
-          else errorCount++;
+          if (response.ok) {
+            successCount++;
+          } else {
+            errorCount++;
+          }
         } catch (error) {
           errorCount++;
         }

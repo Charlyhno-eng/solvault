@@ -24,6 +24,16 @@ export async function createSolanaWallet(): Promise<WalletPossiblyNull> {
   return wallet;
 }
 
+/**
+ * Restores a Solana Keypair from a Base58-encoded secret key string.
+ *
+ * @param secretKeyBs58 - Base58-encoded secret key string (typically 88 characters)
+ * @returns Keypair instance ready for signing transactions
+ *
+ * @example
+ * const keypair = restoreWalletFromBs58("your-bs58-secret-key-here");
+ * console.log(keypair.publicKey.toBase58());
+ */
 export function restoreWalletFromBs58(secretKeyBs58: string): Keypair {
   const secretKey = decode(secretKeyBs58);
   return Keypair.fromSecretKey(secretKey);

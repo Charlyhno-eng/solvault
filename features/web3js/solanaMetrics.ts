@@ -41,7 +41,7 @@ export async function fetchSolanaMetrics(): Promise<Metrics> {
           ? new Date(block?.blockTime * 1000).toISOString()
           : "N/A",
       });
-    } catch (e) {
+    } catch (error) {
       continue;
     }
   }

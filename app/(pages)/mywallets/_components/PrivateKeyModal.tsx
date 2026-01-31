@@ -16,13 +16,21 @@ function PrivateKeyModal({
 }: PrivateKeyModalProps) {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+      }
     };
-    if (isOpen) document.addEventListener("keydown", handleEscape);
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscape);
+    }
+
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    return null;
+  }
 
   const handleCopy = () => {
     navigator.clipboard.writeText(secretKeyBs58);
