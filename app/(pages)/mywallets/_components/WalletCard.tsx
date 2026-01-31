@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DeleteWalletButton from "./DeleteWalletButton";
 import PrivateKeyModal from "./PrivateKeyModal";
 import WalletDetails from "./WalletDetails";
@@ -32,7 +32,47 @@ function WalletCard({
   onLabelChange,
 }: WalletCardProps) {
   const [showPrivateKey, setShowPrivateKey] = useState(false);
+  const [balance, setBalance] = useState<number | null>(null);
+  const [loadingBalance, setLoadingBalance] = useState<boolean>(true);
   const shortAddress = `${publicKey.slice(0, 8)}...${publicKey.slice(-8)}`;
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchBalance() {
+      try {
+        setLoadingBalance(true);
+        const response = await fetch(
+          `/api/wallet/${walletId}/balance?publicKey=${encodeURIComponent(publicKey)}`,
+          { cache: "no-store" },
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (!cancelled && data.balance !== undefined) {
+          setBalance(Number(data.balance));
+        }
+      } catch (e) {
+        console.error("Failed to fetch SOL balance for", publicKey, e);
+        if (!cancelled) {
+          setBalance(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingBalance(false);
+        }
+      }
+    }
+
+    fetchBalance();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [walletId, publicKey]);
 
   return (
     <>
@@ -46,7 +86,29 @@ function WalletCard({
           onLabelChange={onLabelChange}
         />
 
-        <div className="flex items-center justify-between gap-3 mt-4">
+        {/* Balance */}
+        <div className="mt-2 mb-4 flex items-center justify-between text-sm">
+          <span className="text-xs uppercase tracking-wide text-white/50 font-mono">
+            Balance
+          </span>
+          <span className="font-mono text-right min-w-[80px]">
+            {loadingBalance ? (
+              <span className="text-xs text-white/40 animate-pulse">
+                Loading...
+              </span>
+            ) : balance !== null ? (
+              <span className="font-semibold text-green-400 text-base">
+                {balance.toFixed(balance < 0.01 ? 6 : 4)} SOL
+              </span>
+            ) : (
+              <span className="text-xs text-orange-400 font-medium">
+                Unavailable
+              </span>
+            )}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
           <WalletDetails
             address={shortAddress}
             onCopy={onCopy}
