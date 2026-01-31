@@ -20,6 +20,10 @@ import {
 import { PlusIcon } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
+import { BalanceDisplay } from "./BalanceDisplay";
+import { WalletSelect } from "./WalletSelect";
+import { useSolPrice } from "./useSolPrice";
+import { useWalletBalance } from "./useWalletBalance";
 
 interface TransferFormProps {
   onFormChange: (data: {
@@ -39,17 +43,22 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
   const [customAddress, setCustomAddress] = useState("");
   const [amount, setAmount] = useState("");
 
-  // ✅ Balances pour chaque wallet
-  const [fromBalance, setFromBalance] = useState<number | null>(null);
-  const [toBalance, setToBalance] = useState<number | null>(null);
-  const [loadingFromBalance, setLoadingFromBalance] = useState(false);
-  const [loadingToBalance, setLoadingToBalance] = useState(false);
+  const fromWalletData = wallets.find((w) => w.id === fromWallet);
+  const toWalletData = wallets.find((w) => w.id === toWallet);
+  const { balance: fromBalance, loading: loadingFromBalance } =
+    useWalletBalance(fromWallet, fromWalletData?.public_key || "");
+  const { balance: toBalance, loading: loadingToBalance } = useWalletBalance(
+    toWallet,
+    toWalletData?.public_key || "",
+  );
+  const { price: solPrice } = useSolPrice();
 
   const fetchWallets = useCallback(async () => {
     try {
       const response = await fetch("/api/wallet", { cache: "no-store" });
       const data = await response.json();
       setWallets(data);
+
       if (data.length > 0) {
         setFromWallet(data[0].id);
       }
@@ -60,71 +69,18 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
     }
   }, []);
 
-  // ✅ Fetch balance pour un wallet
-  const fetchWalletBalance = useCallback(
-    async (walletId: number, publicKey: string) => {
-      try {
-        setLoadingFromBalance(walletId === fromWallet);
-        setLoadingToBalance(walletId === toWallet);
-        const response = await fetch(
-          `/api/wallet/${walletId}/balance?publicKey=${encodeURIComponent(publicKey)}`,
-          { cache: "no-store" },
-        );
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-        const data = await response.json();
-        if (data.balance !== undefined) {
-          const balance = Number(data.balance);
-          if (walletId === fromWallet) {
-            setFromBalance(balance);
-          } else if (walletId === toWallet) {
-            setToBalance(balance);
-          }
-        }
-      } catch (error) {
-        console.error("Failed to fetch balance:", error);
-        if (walletId === fromWallet) {
-          setFromBalance(null);
-        } else if (walletId === toWallet) {
-          setToBalance(null);
-        }
-      } finally {
-        setLoadingFromBalance(false);
-        setLoadingToBalance(false);
-      }
-    },
-    [fromWallet, toWallet],
-  );
-
   useEffect(() => {
     fetchWallets();
   }, [fetchWallets]);
-
-  // ✅ Fetch balance quand wallet change
-  useEffect(() => {
-    if (fromWallet) {
-      const wallet = wallets.find((w) => w.id === fromWallet);
-      if (wallet) {
-        fetchWalletBalance(fromWallet, wallet.public_key);
-      }
-    }
-  }, [fromWallet, wallets, fetchWalletBalance]);
-
-  useEffect(() => {
-    if (toWallet) {
-      const wallet = wallets.find((w) => w.id === toWallet);
-      if (wallet) {
-        fetchWalletBalance(toWallet, wallet.public_key);
-      }
-    }
-  }, [toWallet, wallets, fetchWalletBalance]);
 
   const availableToWallets = wallets.filter(
     (wallet) => wallet.id !== fromWallet,
   );
 
   const handleReviewClick = useCallback(() => {
-    if (!fromWallet || (!toWallet && !customAddress) || !amount) return;
+    if (!fromWallet || (!toWallet && !customAddress) || !amount) {
+      return;
+    }
 
     onFormChange({
       fromWalletId: fromWallet,
@@ -140,24 +96,6 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
     amount,
     onFormChange,
   ]);
-
-  const formatBalance = (balance: number | null, loading: boolean) => {
-    if (loading) {
-      return (
-        <span className="text-xs text-white/40 animate-pulse">Loading...</span>
-      );
-    }
-    if (balance === null) {
-      return (
-        <span className="text-xs text-orange-400 font-medium">Unavailable</span>
-      );
-    }
-    return (
-      <span className="font-semibold text-green-400 text-sm">
-        {balance.toFixed(balance < 0.01 ? 6 : 4)} SOL
-      </span>
-    );
-  };
 
   if (loading) {
     return (
@@ -214,65 +152,37 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 flex-1 flex flex-col justify-center">
-          {/* From */}
           <div>
             <label className="text-sm font-semibold text-white/80 mb-3 block">
               From
             </label>
-            <Select
-              value={fromWallet?.toString() || ""}
-              onValueChange={(v) => {
-                setFromWallet(Number(v));
+            <WalletSelect
+              wallets={wallets}
+              selectedId={fromWallet}
+              onChange={(id) => {
+                setFromWallet(id);
                 setToWallet(null);
                 setUseCustomAddress(false);
                 setCustomAddress("");
               }}
-            >
-              <SelectTrigger className="w-full h-14 bg-white/20 border-white/30 text-white font-mono rounded-xl backdrop-blur-xl focus-visible:ring-2 focus-visible:ring-purple-500/50 hover:bg-white/25 transition-all duration-200">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-black/90 border-white/30 text-white w-[320px] backdrop-blur-md shadow-2xl">
-                {wallets.map((wallet) => (
-                  <SelectItem
-                    key={wallet.id}
-                    value={wallet.id.toString()}
-                    className="font-mono"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-purple-500/20 rounded-full flex items-center justify-center">
-                        <Image
-                          src="/solana-sol-logo.svg"
-                          alt="Solana"
-                          width={20}
-                          height={20}
-                          className="object-contain"
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <div>{wallet.label || `Wallet ${wallet.id}`}</div>
-                        <div className="text-xs text-white/60 font-mono">
-                          {`${wallet.public_key.slice(0, 8)}...${wallet.public_key.slice(-8)}`}
-                        </div>
-                      </div>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {/* ✅ Balance From */}
+              isFrom
+              showAddress
+            />
             {fromWallet && (
               <div className="mt-2 flex items-center justify-between text-xs">
                 <span className="text-white/50 uppercase tracking-wide font-mono">
                   Balance
                 </span>
                 <span className="font-mono min-w-[80px] text-right">
-                  {formatBalance(fromBalance, loadingFromBalance)}
+                  <BalanceDisplay
+                    balance={fromBalance}
+                    loading={loadingFromBalance}
+                  />
                 </span>
               </div>
             )}
           </div>
 
-          {/* To */}
           <div>
             <label className="text-sm font-semibold text-white/80 mb-3 block">
               To
@@ -324,7 +234,7 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
                   ))}
                   <SelectItem
                     value="custom"
-                    className="font-mono bg-gradient-to-r from-gray-800 to-gray-700 border-t border-white/10"
+                    className="font-mono bg-linear-to-r from-gray-800 to-gray-700 border-t border-white/10"
                   >
                     <div className="flex items-center gap-3">
                       <PlusIcon className="w-4 h-4 text-green-400" />
@@ -343,20 +253,21 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
                 />
               )}
             </div>
-            {/* ✅ Balance To */}
             {toWallet && (
               <div className="mt-2 flex items-center justify-between text-xs">
                 <span className="text-white/50 uppercase tracking-wide font-mono">
                   Balance
                 </span>
                 <span className="font-mono min-w-[80px] text-right">
-                  {formatBalance(toBalance, loadingToBalance)}
+                  <BalanceDisplay
+                    balance={toBalance}
+                    loading={loadingToBalance}
+                  />
                 </span>
               </div>
             )}
           </div>
 
-          {/* Amount */}
           <div>
             <label className="text-sm font-semibold text-white/80 mb-3 block">
               Amount (SOL)
@@ -372,8 +283,9 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
                 className="w-full h-16 bg-white/10 border-white/30 text-white placeholder-white/50 font-bold rounded-2xl focus-visible:ring-2 focus-visible:ring-purple-500/50 pr-20 text-2xl text-right"
               />
             </div>
-            <div className="text-xs text-white/50 text-right font-mono mt-1">
-              ~${(Number(amount || 0) * 250).toLocaleString()} (at $250/SOL)
+            <div className="text-xs text-white/50 text-right font-mono mt-1 flex justify-between items-center">
+              <span>~${(Number(amount || 0) * solPrice).toLocaleString()}</span>
+              <span>at ${solPrice.toFixed(2)}/SOL</span>
             </div>
           </div>
 
@@ -383,7 +295,7 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
             disabled={
               !fromWallet || (!toWallet && !customAddress) || !amount || loading
             }
-            className="w-full h-16 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 text-xl font-bold rounded-2xl shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-200"
+            className="w-full h-16 bg-linear-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 text-xl font-bold rounded-2xl shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-200"
           >
             Review & Send
           </Button>
