@@ -39,13 +39,17 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
   const [customAddress, setCustomAddress] = useState("");
   const [amount, setAmount] = useState("");
 
+  // ✅ Balances pour chaque wallet
+  const [fromBalance, setFromBalance] = useState<number | null>(null);
+  const [toBalance, setToBalance] = useState<number | null>(null);
+  const [loadingFromBalance, setLoadingFromBalance] = useState(false);
+  const [loadingToBalance, setLoadingToBalance] = useState(false);
+
   const fetchWallets = useCallback(async () => {
     try {
       const response = await fetch("/api/wallet", { cache: "no-store" });
       const data = await response.json();
-
       setWallets(data);
-
       if (data.length > 0) {
         setFromWallet(data[0].id);
       }
@@ -56,9 +60,64 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
     }
   }, []);
 
+  // ✅ Fetch balance pour un wallet
+  const fetchWalletBalance = useCallback(
+    async (walletId: number, publicKey: string) => {
+      try {
+        setLoadingFromBalance(walletId === fromWallet);
+        setLoadingToBalance(walletId === toWallet);
+        const response = await fetch(
+          `/api/wallet/${walletId}/balance?publicKey=${encodeURIComponent(publicKey)}`,
+          { cache: "no-store" },
+        );
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+        if (data.balance !== undefined) {
+          const balance = Number(data.balance);
+          if (walletId === fromWallet) {
+            setFromBalance(balance);
+          } else if (walletId === toWallet) {
+            setToBalance(balance);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch balance:", error);
+        if (walletId === fromWallet) {
+          setFromBalance(null);
+        } else if (walletId === toWallet) {
+          setToBalance(null);
+        }
+      } finally {
+        setLoadingFromBalance(false);
+        setLoadingToBalance(false);
+      }
+    },
+    [fromWallet, toWallet],
+  );
+
   useEffect(() => {
     fetchWallets();
   }, [fetchWallets]);
+
+  // ✅ Fetch balance quand wallet change
+  useEffect(() => {
+    if (fromWallet) {
+      const wallet = wallets.find((w) => w.id === fromWallet);
+      if (wallet) {
+        fetchWalletBalance(fromWallet, wallet.public_key);
+      }
+    }
+  }, [fromWallet, wallets, fetchWalletBalance]);
+
+  useEffect(() => {
+    if (toWallet) {
+      const wallet = wallets.find((w) => w.id === toWallet);
+      if (wallet) {
+        fetchWalletBalance(toWallet, wallet.public_key);
+      }
+    }
+  }, [toWallet, wallets, fetchWalletBalance]);
 
   const availableToWallets = wallets.filter(
     (wallet) => wallet.id !== fromWallet,
@@ -81,6 +140,24 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
     amount,
     onFormChange,
   ]);
+
+  const formatBalance = (balance: number | null, loading: boolean) => {
+    if (loading) {
+      return (
+        <span className="text-xs text-white/40 animate-pulse">Loading...</span>
+      );
+    }
+    if (balance === null) {
+      return (
+        <span className="text-xs text-orange-400 font-medium">Unavailable</span>
+      );
+    }
+    return (
+      <span className="font-semibold text-green-400 text-sm">
+        {balance.toFixed(balance < 0.01 ? 6 : 4)} SOL
+      </span>
+    );
+  };
 
   if (loading) {
     return (
@@ -137,6 +214,7 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 flex-1 flex flex-col justify-center">
+          {/* From */}
           <div>
             <label className="text-sm font-semibold text-white/80 mb-3 block">
               From
@@ -170,14 +248,31 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
                           className="object-contain"
                         />
                       </div>
-                      {wallet.label || `Wallet ${wallet.id}`}
+                      <div className="flex-1">
+                        <div>{wallet.label || `Wallet ${wallet.id}`}</div>
+                        <div className="text-xs text-white/60 font-mono">
+                          {`${wallet.public_key.slice(0, 8)}...${wallet.public_key.slice(-8)}`}
+                        </div>
+                      </div>
                     </div>
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {/* ✅ Balance From */}
+            {fromWallet && (
+              <div className="mt-2 flex items-center justify-between text-xs">
+                <span className="text-white/50 uppercase tracking-wide font-mono">
+                  Balance
+                </span>
+                <span className="font-mono min-w-[80px] text-right">
+                  {formatBalance(fromBalance, loadingFromBalance)}
+                </span>
+              </div>
+            )}
           </div>
 
+          {/* To */}
           <div>
             <label className="text-sm font-semibold text-white/80 mb-3 block">
               To
@@ -218,13 +313,18 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
                             className="object-contain"
                           />
                         </div>
-                        {wallet.label || `Wallet ${wallet.id}`}
+                        <div className="flex-1">
+                          <div>{wallet.label || `Wallet ${wallet.id}`}</div>
+                          <div className="text-xs text-white/60 font-mono">
+                            {`${wallet.public_key.slice(0, 8)}...${wallet.public_key.slice(-8)}`}
+                          </div>
+                        </div>
                       </div>
                     </SelectItem>
                   ))}
                   <SelectItem
                     value="custom"
-                    className="font-mono bg-linear-to-r from-gray-800 to-gray-700 border-t border-white/10"
+                    className="font-mono bg-gradient-to-r from-gray-800 to-gray-700 border-t border-white/10"
                   >
                     <div className="flex items-center gap-3">
                       <PlusIcon className="w-4 h-4 text-green-400" />
@@ -243,8 +343,20 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
                 />
               )}
             </div>
+            {/* ✅ Balance To */}
+            {toWallet && (
+              <div className="mt-2 flex items-center justify-between text-xs">
+                <span className="text-white/50 uppercase tracking-wide font-mono">
+                  Balance
+                </span>
+                <span className="font-mono min-w-[80px] text-right">
+                  {formatBalance(toBalance, loadingToBalance)}
+                </span>
+              </div>
+            )}
           </div>
 
+          {/* Amount */}
           <div>
             <label className="text-sm font-semibold text-white/80 mb-3 block">
               Amount (SOL)
@@ -260,6 +372,9 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
                 className="w-full h-16 bg-white/10 border-white/30 text-white placeholder-white/50 font-bold rounded-2xl focus-visible:ring-2 focus-visible:ring-purple-500/50 pr-20 text-2xl text-right"
               />
             </div>
+            <div className="text-xs text-white/50 text-right font-mono mt-1">
+              ~${(Number(amount || 0) * 250).toLocaleString()} (at $250/SOL)
+            </div>
           </div>
 
           <Button
@@ -268,7 +383,7 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
             disabled={
               !fromWallet || (!toWallet && !customAddress) || !amount || loading
             }
-            className="w-full h-16 bg-linear-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 text-xl font-bold rounded-2xl shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-200"
+            className="w-full h-16 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 text-xl font-bold rounded-2xl shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-200"
           >
             Review & Send
           </Button>
