@@ -8,23 +8,23 @@ import {
 } from "@/helpers/ui/BasicShadCn/select";
 import Image from "next/image";
 
-interface WalletSelectProps {
+type WalletSelectProps = {
   wallets: WalletTableType[];
   selectedId: number | null;
   onChange: (id: number | null) => void;
   isFrom?: boolean;
   excludeId?: number | null;
   showAddress?: boolean;
-}
+};
 
-export const WalletSelect = ({
+export function WalletSelect({
   wallets,
   selectedId,
   onChange,
   isFrom = false,
   excludeId = null,
   showAddress = false,
-}: WalletSelectProps) => {
+}: WalletSelectProps) {
   const availableWallets = excludeId
     ? wallets.filter((w) => w.id !== excludeId)
     : wallets;
@@ -72,4 +72,4 @@ export const WalletSelect = ({
       </SelectContent>
     </Select>
   );
-};
+}

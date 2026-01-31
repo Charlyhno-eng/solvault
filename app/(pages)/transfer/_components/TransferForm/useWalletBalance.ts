@@ -1,9 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-export const useWalletBalance = (
-  walletId: number | null,
-  publicKey: string,
-) => {
+export function useWalletBalance(walletId: number | null, publicKey: string) {
   const [balance, setBalance] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -21,14 +18,15 @@ export const useWalletBalance = (
         { cache: "no-store" },
       );
 
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
 
       const data = await response.json();
       if (data.balance !== undefined) {
         setBalance(Number(data.balance));
       }
     } catch (error) {
-      console.error("Failed to fetch balance:", error);
       setBalance(null);
     } finally {
       setLoading(false);
@@ -40,4 +38,4 @@ export const useWalletBalance = (
   }, [fetchBalance]);
 
   return { balance, loading, refetch: fetchBalance };
-};
+}

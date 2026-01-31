@@ -1,9 +1,9 @@
-interface BalanceDisplayProps {
+type BalanceDisplayProps = {
   balance: number | null;
   loading: boolean;
-}
+};
 
-export const BalanceDisplay = ({ balance, loading }: BalanceDisplayProps) => {
+export function BalanceDisplay({ balance, loading }: BalanceDisplayProps) {
   if (loading) {
     return (
       <span className="text-xs text-white/40 animate-pulse">Loading...</span>
@@ -19,4 +19,4 @@ export const BalanceDisplay = ({ balance, loading }: BalanceDisplayProps) => {
       {balance.toFixed(balance < 0.01 ? 6 : 4)} SOL
     </span>
   );
-};
+}

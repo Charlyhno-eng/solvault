@@ -1,6 +1,7 @@
 "use client";
 
 import type { WalletTableType } from "@/features/wallet/types";
+import { useSolPrice } from "@/helpers/commons/useSolPrice";
 import { Button } from "@/helpers/ui/BasicShadCn/button";
 import {
   Card,
@@ -21,18 +22,17 @@ import { PlusIcon } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { BalanceDisplay } from "./BalanceDisplay";
-import { WalletSelect } from "./WalletSelect";
-import { useSolPrice } from "./useSolPrice";
 import { useWalletBalance } from "./useWalletBalance";
+import { WalletSelect } from "./WalletSelect";
 
-interface TransferFormProps {
+type TransferFormProps = {
   onFormChange: (data: {
     fromWalletId: number;
     toWalletId?: number;
     toAddress?: string;
     amount: string;
   }) => void;
-}
+};
 
 export default function TransferForm({ onFormChange }: TransferFormProps) {
   const [wallets, setWallets] = useState<WalletTableType[]>([]);
