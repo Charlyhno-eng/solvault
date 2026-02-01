@@ -4,10 +4,11 @@ import { SolanaColors } from "@/helpers/ui/Layout/ColorTheme";
 import GradientText from "@/helpers/ui/Layout/GradientText";
 import ButtonTransparent from "@/helpers/ui/MyComponents/ButtonTransparent";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
 
   const navItems = [
     { label: "My wallets", href: "/mywallets" },
@@ -46,11 +47,26 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center space-x-2 md:space-x-4 min-w-0 shrink-0">
-          {navItems.map(({ label, href }) => (
-            <ButtonTransparent key={href} onClick={() => router.push(href)}>
-              {label}
-            </ButtonTransparent>
-          ))}
+          {navItems.map(({ label, href }) => {
+            const isActive = pathname === href;
+
+            return (
+              <ButtonTransparent
+                key={href}
+                onClick={() => router.push(href)}
+                className={`
+                  ${
+                    isActive
+                      ? "bg-linear-to-r from-purple-500 to-blue-500 text-white shadow-lg shadow-purple-500/50 border-white/50 scale-105 font-bold tracking-wide"
+                      : "bg-transparent"
+                  }
+                  hover:scale-105 transition-all duration-300
+                `}
+              >
+                {label}
+              </ButtonTransparent>
+            );
+          })}
         </div>
       </div>
     </nav>

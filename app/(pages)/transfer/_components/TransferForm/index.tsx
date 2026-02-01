@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/helpers/ui/BasicShadCn/select";
-import { PlusIcon } from "lucide-react";
+import { AlertCircleIcon, PlusIcon } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { BalanceDisplay } from "./BalanceDisplay";
@@ -77,8 +77,18 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
     (wallet) => wallet.id !== fromWallet,
   );
 
+  const amountNum = Number(amount);
+  const hasInsufficientBalance =
+    fromBalance !== null && amountNum > 0 && fromBalance < amountNum;
+  const isAmountValid = amountNum > 0 && !hasInsufficientBalance;
+
   const handleReviewClick = useCallback(() => {
-    if (!fromWallet || (!toWallet && !customAddress) || !amount) {
+    if (
+      !fromWallet ||
+      (!toWallet && !customAddress) ||
+      !amount ||
+      hasInsufficientBalance
+    ) {
       return;
     }
 
@@ -95,7 +105,23 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
     customAddress,
     amount,
     onFormChange,
+    hasInsufficientBalance,
   ]);
+
+  useEffect(() => {
+    if (hasInsufficientBalance) {
+      setAmount("");
+    }
+  }, [fromBalance, hasInsufficientBalance]);
+
+  const maxAvailableAmount =
+    fromBalance !== null ? Math.max(0, fromBalance * 0.99) : 0;
+
+  const handleMaxClick = useCallback(() => {
+    if (fromBalance !== null) {
+      setAmount((fromBalance * 0.99).toFixed(6));
+    }
+  }, [fromBalance]);
 
   if (loading) {
     return (
@@ -164,6 +190,7 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
                 setToWallet(null);
                 setUseCustomAddress(false);
                 setCustomAddress("");
+                setAmount("");
               }}
               isFrom
               showAddress
@@ -277,27 +304,88 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
                 type="number"
                 step="0.000001"
                 min="0"
+                max={maxAvailableAmount.toFixed(6)}
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (
+                    fromBalance !== null &&
+                    Number(val) > fromBalance * 0.99
+                  ) {
+                    return;
+                  }
+                  setAmount(val);
+                }}
                 placeholder="0.000000"
-                className="w-full h-16 bg-white/10 border-white/30 text-white placeholder-white/50 font-bold rounded-2xl focus-visible:ring-2 focus-visible:ring-purple-500/50 pr-20 text-2xl text-right"
+                className={`w-full h-16 bg-white/10 border-white/30 text-white placeholder-white/50 font-bold rounded-2xl focus-visible:ring-2 focus-visible:ring-purple-500/50 pr-20 text-2xl text-right ${
+                  hasInsufficientBalance
+                    ? "border-orange-400 ring-2 ring-orange-400/50 bg-orange-500/5"
+                    : ""
+                }`}
               />
+              <button
+                type="button"
+                onClick={handleMaxClick}
+                disabled={fromBalance === null || loadingFromBalance}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-lg font-semibold transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                MAX
+              </button>
             </div>
-            <div className="text-xs text-white/50 text-right font-mono mt-1 flex justify-between items-center">
-              <span>~${(Number(amount || 0) * solPrice).toLocaleString()}</span>
-              <span>at ${solPrice.toFixed(2)}/SOL</span>
-            </div>
+
+            {fromBalance !== null && (
+              <div className="text-xs text-white/70 text-right font-mono mt-2 flex justify-between items-center">
+                <span>Max available: {maxAvailableAmount.toFixed(6)} SOL</span>
+                <span>
+                  ~$
+                  {(maxAvailableAmount * solPrice).toLocaleString(undefined, {
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+              </div>
+            )}
+
+            {hasInsufficientBalance && (
+              <div className="flex items-center gap-2 text-orange-400 text-xs mt-2 p-3 bg-orange-500/10 border border-orange-400/30 rounded-xl">
+                <AlertCircleIcon className="w-4 h-4" />
+                <span>
+                  Insufficient balance. Available: {fromBalance.toFixed(6)} SOL
+                </span>
+              </div>
+            )}
+
+            {amount && !hasInsufficientBalance && (
+              <div className="text-xs text-white/50 text-right font-mono mt-1 flex justify-between items-center">
+                <span>
+                  ~$
+                  {(amountNum * solPrice).toLocaleString(undefined, {
+                    maximumFractionDigits: 2,
+                  })}
+                </span>
+                <span>at ${solPrice.toFixed(2)}/SOL</span>
+              </div>
+            )}
           </div>
 
           <Button
             size="lg"
             onClick={handleReviewClick}
             disabled={
-              !fromWallet || (!toWallet && !customAddress) || !amount || loading
+              loading ||
+              !fromWallet ||
+              (!toWallet && !customAddress) ||
+              !amount ||
+              !isAmountValid ||
+              loadingFromBalance ||
+              (useCustomAddress && !customAddress)
             }
-            className="w-full h-16 bg-linear-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 text-xl font-bold rounded-2xl shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-200"
+            className="w-full h-16 bg-linear-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 text-xl font-bold rounded-2xl shadow-2xl shadow-purple-500/30 hover:shadow-purple-500/50 transition-all duration-200 disabled:from-gray-600 disabled:via-gray-600 disabled:to-gray-600 disabled:shadow-none disabled:cursor-not-allowed"
           >
-            Review & Send
+            {hasInsufficientBalance
+              ? "Insufficient Balance"
+              : loadingFromBalance
+                ? "Loading Balance..."
+                : "Review & Send"}
           </Button>
         </CardContent>
       </Card>
