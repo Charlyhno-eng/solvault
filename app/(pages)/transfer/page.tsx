@@ -5,15 +5,19 @@ import { useCallback, useEffect, useState } from "react";
 import TransferForm from "./_components/TransferForm";
 import TransferHeader from "./_components/TransferHeader";
 import TransferPreview from "./_components/TransferPreview";
+import { useTransferState } from "./_components/useTransferState";
 
 export default function PageTransfer() {
-  const [transferData, setTransferData] = useState<{
-    fromWalletId: number;
-    toWalletId?: number;
-    toAddress?: string;
-    amount: string;
-  } | null>(null);
   const [wallets, setWallets] = useState<WalletTableType[]>([]);
+
+  const {
+    transferData,
+    setTransferData,
+    isProcessing,
+    transferResult,
+    sendTransfer,
+    resetTransfer,
+  } = useTransferState(wallets);
 
   const handleFormChange = useCallback(
     (data: {
@@ -24,8 +28,17 @@ export default function PageTransfer() {
     }) => {
       setTransferData(data);
     },
-    [],
+    [setTransferData],
   );
+
+  useEffect(() => {
+    const handleRefresh = () => {
+      window.location.reload();
+    };
+
+    window.addEventListener("refresh-balances", handleRefresh);
+    return () => window.removeEventListener("refresh-balances", handleRefresh);
+  }, []);
 
   useEffect(() => {
     const fetchWallets = async () => {
@@ -46,7 +59,14 @@ export default function PageTransfer() {
         <TransferHeader />
         <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-stretch mt-16">
           <TransferForm onFormChange={handleFormChange} />
-          <TransferPreview transferData={transferData} wallets={wallets} />
+          <TransferPreview
+            transferData={transferData}
+            wallets={wallets}
+            isProcessing={isProcessing}
+            transferResult={transferResult}
+            onSendTransfer={sendTransfer}
+            onReset={resetTransfer}
+          />
         </div>
       </div>
     </div>

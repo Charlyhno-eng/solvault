@@ -5,7 +5,7 @@ let solanaConnection: Connection | null = null;
 export function getSolanaConnection(): Connection {
   if (!solanaConnection) {
     solanaConnection = new Connection(
-      "https://api.devnet.solana.com",
+      "https://solana-rpc.publicnode.com",
       "confirmed",
     );
   }

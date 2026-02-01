@@ -1,6 +1,7 @@
 "use client";
 
 import type { WalletTableType } from "@/features/wallet/types";
+import { Button } from "@/helpers/ui/BasicShadCn/button";
 import {
   Card,
   CardContent,
@@ -8,7 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/helpers/ui/BasicShadCn/card";
-import { ArrowRight, Zap } from "lucide-react";
+import { AlertTriangle, ArrowRight, CheckCircle, Zap } from "lucide-react";
 import { TransactionFooter } from "./TransactionFooter";
 import { TransactionSummary } from "./TransactionSummary";
 import { WalletPreviewCard } from "./WalletPreviewCard";
@@ -21,11 +22,19 @@ type TransferPreviewProps = {
     amount: string;
   } | null;
   wallets: WalletTableType[];
+  isProcessing: boolean;
+  transferResult: any;
+  onSendTransfer: () => void;
+  onReset: () => void;
 };
 
 export default function TransferPreview({
   transferData,
   wallets,
+  isProcessing,
+  transferResult,
+  onSendTransfer,
+  onReset,
 }: TransferPreviewProps) {
   if (!transferData || !transferData.amount) {
     return (
@@ -60,6 +69,56 @@ export default function TransferPreview({
     navigator.clipboard.writeText(address);
   };
 
+  if (transferResult?.success) {
+    return (
+      <div className="lg:w-full flex">
+        <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl w-full flex flex-col max-h-[600px]">
+          <CardHeader className="text-center pt-8 pb-6">
+            <div className="w-24 h-24 bg-green-500/20 border-4 border-green-500/40 rounded-3xl flex items-center justify-center mx-auto mb-6">
+              <CheckCircle className="w-12 h-12 text-green-400" />
+            </div>
+            <CardTitle className="text-3xl font-bold text-white flex items-center justify-center gap-3">
+              Transfer Successful!
+            </CardTitle>
+            <CardDescription className="text-white/70 text-lg">
+              Your SOL has been sent securely
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="font-mono bg-black/30 backdrop-blur-sm p-6 rounded-2xl border border-white/20 text-center">
+              <p className="text-sm text-white/60 mb-3 uppercase tracking-wider font-semibold">
+                Transaction Signature
+              </p>
+              <p className="font-mono text-white font-bold break-all text-lg bg-black/50 px-4 py-2 rounded-xl border border-white/20">
+                {transferResult.signature?.slice(0, 8)}...
+                {transferResult.signature?.slice(-8)}
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="mt-3 text-green-400 hover:text-green-300 hover:bg-green-500/20"
+                onClick={() =>
+                  window.open(
+                    `https://solscan.io/tx/${transferResult.signature}`,
+                    "_blank",
+                  )
+                }
+              >
+                View on Solscan
+              </Button>
+            </div>
+            <Button
+              onClick={onReset}
+              className="w-full bg-green-600 hover:bg-green-700 h-14 text-lg font-bold rounded-2xl shadow-xl shadow-green-500/30"
+            >
+              New Transfer
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="lg:w-full flex">
       <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl w-full flex flex-col max-h-[600px]">
@@ -73,8 +132,8 @@ export default function TransferPreview({
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-3 flex-1">
-          <div className="space-y-1">
+        <CardContent className="space-y-6 flex-1 p-0">
+          <div className="space-y-2 p-4">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-red-400 rounded-full animate-pulse" />
               <span className="text-sm font-semibold text-red-400 uppercase tracking-wider">
@@ -89,13 +148,13 @@ export default function TransferPreview({
             />
           </div>
 
-          <div className="flex items-center justify-center py-2">
+          <div className="flex items-center justify-center py-4">
             <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center border-2 border-white/20">
               <ArrowRight className="w-8 h-8 text-white/40" />
             </div>
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-2 p-4">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-green-400 rounded-full" />
               <span className="text-sm font-semibold text-green-400 uppercase tracking-wider">
@@ -114,7 +173,21 @@ export default function TransferPreview({
           </div>
 
           <TransactionSummary amount={amount} />
-          <TransactionFooter />
+
+          {transferResult?.success === false && (
+            <div className="p-4 bg-red-500/10 border-2 border-red-500/30 rounded-2xl mx-4">
+              <div className="flex items-center gap-3 text-red-400 text-sm">
+                <AlertTriangle className="w-5 h-5 shrink-0" />
+                <span className="font-medium">{transferResult.error}</span>
+              </div>
+            </div>
+          )}
+
+          <TransactionFooter
+            isProcessing={isProcessing}
+            onSend={onSendTransfer}
+            disabled={isProcessing}
+          />
         </CardContent>
       </Card>
     </div>

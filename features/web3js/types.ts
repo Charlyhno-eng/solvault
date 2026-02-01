@@ -36,3 +36,28 @@ export type recentBlocksType = {
   numTx: number;
   timestamp: string;
 }[];
+
+export type TransferResult =
+  | {
+      success: true;
+      signature: string;
+      blockhash: string;
+      amountSOL: number;
+      from: string;
+      to: string;
+      timestamp: string;
+      fee: number;
+    }
+  | {
+      success: false;
+      error: TransferError;
+      signature: null;
+    };
+
+export type TransferError =
+  | "Invalid from wallet public key"
+  | "Invalid to wallet public key"
+  | "Insufficient balance. Available: X SOL"
+  | "Transaction failed: X"
+  | "Network error"
+  | "Transfer failed";

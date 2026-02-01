@@ -51,3 +51,15 @@ export function updateWalletLabel(
   const stmt = db.prepare("UPDATE wallets SET label = ? WHERE id = ?");
   return stmt.run(label, walletId);
 }
+
+/**
+ * Retrieves a specific wallet by ID including its secret key for transfer operations.
+ *
+ * @param walletId - Numeric ID of the wallet to retrieve from the database
+ * @returns WalletTableType | undefined - Complete wallet record with secret_key_bs58 if found, undefined otherwise
+ */
+export function getWalletById(walletId: number): WalletTableType | undefined {
+  return db.prepare("SELECT * FROM wallets WHERE id = ?").get(walletId) as
+    | WalletTableType
+    | undefined;
+}
