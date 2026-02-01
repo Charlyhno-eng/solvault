@@ -14,6 +14,12 @@ import { TransactionFooter } from "./TransactionFooter";
 import { TransactionSummary } from "./TransactionSummary";
 import { WalletPreviewCard } from "./WalletPreviewCard";
 
+type TransferResult = {
+  success: boolean;
+  signature?: string;
+  error?: string;
+} | null;
+
 type TransferPreviewProps = {
   transferData: {
     fromWalletId: number;
@@ -23,7 +29,7 @@ type TransferPreviewProps = {
   } | null;
   wallets: WalletTableType[];
   isProcessing: boolean;
-  transferResult: any;
+  transferResult: TransferResult;
   onSendTransfer: () => void;
   onReset: () => void;
 };

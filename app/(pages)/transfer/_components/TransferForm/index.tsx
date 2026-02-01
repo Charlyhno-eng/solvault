@@ -117,12 +117,6 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
   const maxAvailableAmount =
     fromBalance !== null ? Math.max(0, fromBalance * 0.99) : 0;
 
-  const handleMaxClick = useCallback(() => {
-    if (fromBalance !== null) {
-      setAmount((fromBalance * 0.99).toFixed(6));
-    }
-  }, [fromBalance]);
-
   if (loading) {
     return (
       <div className="lg:max-w-lg lg:w-full flex">
@@ -299,39 +293,26 @@ export default function TransferForm({ onFormChange }: TransferFormProps) {
             <label className="text-sm font-semibold text-white/80 mb-3 block">
               Amount (SOL)
             </label>
-            <div className="relative">
-              <Input
-                type="number"
-                step="0.000001"
-                min="0"
-                max={maxAvailableAmount.toFixed(6)}
-                value={amount}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  if (
-                    fromBalance !== null &&
-                    Number(val) > fromBalance * 0.99
-                  ) {
-                    return;
-                  }
-                  setAmount(val);
-                }}
-                placeholder="0.000000"
-                className={`w-full h-16 bg-white/10 border-white/30 text-white placeholder-white/50 font-bold rounded-2xl focus-visible:ring-2 focus-visible:ring-purple-500/50 pr-20 text-2xl text-right ${
-                  hasInsufficientBalance
-                    ? "border-orange-400 ring-2 ring-orange-400/50 bg-orange-500/5"
-                    : ""
-                }`}
-              />
-              <button
-                type="button"
-                onClick={handleMaxClick}
-                disabled={fromBalance === null || loadingFromBalance}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-lg font-semibold transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                MAX
-              </button>
-            </div>
+            <Input
+              type="number"
+              step="0.000001"
+              min="0"
+              max={maxAvailableAmount.toFixed(6)}
+              value={amount}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (fromBalance !== null && Number(val) > fromBalance * 0.99) {
+                  return;
+                }
+                setAmount(val);
+              }}
+              placeholder="0.000000"
+              className={`w-full h-16 bg-white/10 border-white/30 text-white placeholder-white/50 font-bold rounded-2xl focus-visible:ring-2 focus-visible:ring-purple-500/50 text-2xl text-right ${
+                hasInsufficientBalance
+                  ? "border-orange-400 ring-2 ring-orange-400/50 bg-orange-500/5"
+                  : ""
+              }`}
+            />
 
             {fromBalance !== null && (
               <div className="text-xs text-white/70 text-right font-mono mt-2 flex justify-between items-center">

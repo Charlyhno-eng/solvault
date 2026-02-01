@@ -10,11 +10,13 @@ This first version focuses on simple and secure management. Future versions will
 
 ## ![SolVault page1](public/page1.png)
 
-## ![SolVault page1](public/page2.png)
+## ![SolVault page2](public/page2.png)
 
-## ![SolVault page1](public/page3.png)
+## ![SolVault page3](public/page3.png)
 
-## ![SolVault page1](public/page4.png)
+## ![SolVault page3_2](public/page3_2.png)
+
+## ![SolVault page4](public/page4.png)
 
 ## Features
 

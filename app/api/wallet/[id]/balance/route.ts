@@ -1,7 +1,6 @@
+import { RPC_ENDPOINT } from "@/helpers/commons/constants";
 import { Connection, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
 import { NextRequest, NextResponse } from "next/server";
-
-const RPC_ENDPOINT = "https://api.mainnet-beta.solana.com";
 
 export async function GET(
   request: NextRequest,

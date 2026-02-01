@@ -51,18 +51,20 @@ export async function transferSol(
       );
     }
 
-    const { blockhash } = await connection.getLatestBlockhash();
+    const { blockhash, lastValidBlockHeight } =
+      await connection.getLatestBlockhash("confirmed");
 
-    const transaction = new Transaction({
-      recentBlockhash: blockhash,
-      feePayer: fromKeypair.publicKey,
-    }).add(
+    const transaction = new Transaction().add(
       SystemProgram.transfer({
         fromPubkey: fromKeypair.publicKey,
         toPubkey: toPublicKey,
         lamports: amountLamports,
       }),
     );
+
+    transaction.recentBlockhash = blockhash;
+    transaction.lastValidBlockHeight = lastValidBlockHeight;
+    transaction.feePayer = fromKeypair.publicKey;
 
     transaction.sign(fromKeypair);
     const signature = await connection.sendRawTransaction(
@@ -73,8 +75,7 @@ export async function transferSol(
       {
         signature,
         blockhash,
-        lastValidBlockHeight: (await connection.getLatestBlockhash())
-          .lastValidBlockHeight!,
+        lastValidBlockHeight,
       },
       "confirmed",
     );
